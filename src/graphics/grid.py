@@ -5,14 +5,15 @@ class Grid(arcade.ShapeElementList):
     def __init__(self):
         super().__init__()
 
-        is_black = True
         for row in range(8):
             for column in range(8):
-                if is_black:
-                    color = arcade.color.BLACK
-                else:
+                def is_even(x):
+                    return x % 2 == 0
+
+                if is_even(row) == is_even(column):
                     color = arcade.color.WHITE
-                is_black = not is_black
+                else:
+                    color = arcade.color.BLACK
 
                 current_rect = arcade.create_rectangle_filled(
                     (square.MARGIN + square.WIDTH) * column + square.MARGIN + square.WIDTH // 2,
@@ -22,4 +23,3 @@ class Grid(arcade.ShapeElementList):
                     color
                 )
                 self.append(current_rect)
-            is_black = not is_black
