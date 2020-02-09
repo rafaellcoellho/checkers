@@ -1,6 +1,7 @@
 import arcade
 from .grid import Grid
 from .checker import Checker
+from .defines import square
 
 class Game(arcade.Window):
     def __init__(self, width, height, title, board):
@@ -25,17 +26,14 @@ class Game(arcade.Window):
         self.grid.draw()
         self.players.draw()
 
-    def on_key_press(self, key, key_modifiers):
-        pass
-
-    def on_key_release(self, key, key_modifiers):
-        pass
-
-    def on_mouse_motion(self, x, y, delta_x, delta_y):
-        pass
-
     def on_mouse_press(self, x, y, button, key_modifiers):
-        pass
-
-    def on_mouse_release(self, x, y, button, key_modifiers):
-        pass
+        column = int(x // (square.WIDTH + square.MARGIN))
+        row = int(y // (square.HEIGHT + square.MARGIN))
+        if self.board.moving_checker == None:
+            self.board.calculate_possible_moves(row, column)
+        else:
+            if [row, column] in self.board.possible_moves:
+                self.board.move(row,column)
+            else:
+                self.board.reset_possible_moves()
+        print(row, column)

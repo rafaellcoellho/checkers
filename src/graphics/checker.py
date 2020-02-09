@@ -23,8 +23,8 @@ class Checker(arcade.ShapeElementList):
                 
                 if square.player_state != square_player_state.EMPTY:
                     current_cir = arcade.create_ellipse_filled(
-                        (margin + width) * (square.column-1) + margin + width // 2,
-                        (margin + heigth) * (square.row-1) + margin + heigth // 2,
+                        (margin + width) * (square.column) + margin + width // 2,
+                        (margin + heigth) * (square.row) + margin + heigth // 2,
                         30,
                         30,
                         color

@@ -16,14 +16,16 @@ class Grid(arcade.ShapeElementList):
 
         for row in board.state:
             for square in row:
-                if square.color == square_color.WHITE:
+                if square.possible_move:
+                    color = arcade.color.BLACK_LEATHER_JACKET
+                elif square.color == square_color.WHITE:
                     color = arcade.color.WHITE
                 elif square.color == square_color.BLACK:
                     color = arcade.color.BLACK
 
                 current_rect = arcade.create_rectangle_filled(
-                    (margin + width) * (square.column-1) + margin + width // 2,
-                    (margin + heigth) * (square.row-1) + margin + heigth // 2,
+                    (margin + width) * (square.column) + margin + width // 2,
+                    (margin + heigth) * (square.row) + margin + heigth // 2,
                     width,
                     heigth,
                     color
