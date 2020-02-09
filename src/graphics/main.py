@@ -1,30 +1,20 @@
 import arcade
-from .defines import square,window
+from .grid import Grid
 
 class Game(arcade.Window):
-    def __init__(self, width, height, title):
+    def __init__(self, width, height, title, board):
         super().__init__(width, height, title)
-        arcade.set_background_color(arcade.color.WHITE_SMOKE)
+        arcade.set_background_color(arcade.color.BLACK)
+        
+        self.grid = None
 
     def setup(self):
+        self.grid = Grid()
         pass
 
     def on_draw(self):
         arcade.start_render()
-
-        # Desenha tabuleiro
-        for i in range(1, 8):
-            arcade.draw_line(
-                square.WIDTH*i, 0,
-                square.WIDTH*i, window.HEIGHT,
-                arcade.color.BLACK, 3
-            )
-            arcade.draw_line(
-                0, square.HEIGHT*i,
-                window.WIDTH, square.HEIGHT*i,
-                arcade.color.BLACK, 3
-            )
-
+        self.grid.draw()
 
     def on_update(self, delta_time):
         pass
