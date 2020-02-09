@@ -42,6 +42,8 @@ class Board():
                     representation.append(" cb")
                 elif square.player_state == square_player_state.CHECKER_RED:
                     representation.append(" cr")
+                elif square.player_state == square_player_state.EMPTY:
+                    representation.append(" e")
                 
                 if square.column != 8:
                     representation.append(", ")
