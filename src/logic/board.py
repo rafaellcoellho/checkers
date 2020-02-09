@@ -11,13 +11,19 @@ class Board():
                 def is_even(x):
                     return x % 2 == 0
 
+                player_state = square_player_state.EMPTY
+
                 if is_even(row) == is_even(column):
                     color = square_color.WHITE
                 else:
                     color = square_color.BLACK
+                    if row in [0, 1, 2]:
+                        player_state = square_player_state.CHECKER_BLUE
+                    elif row in [5, 6, 7]:
+                        player_state = square_player_state.CHECKER_RED
 
                 initial_state[row].append(
-                    Square(row+1, column+1, color)
+                    Square(row+1, column+1, color, player_state)
                 )
         self.state = initial_state
     
@@ -31,6 +37,11 @@ class Board():
                     representation.append("w")
                 elif square.color == square_color.BLACK:
                     representation.append("b")
+
+                if square.player_state == square_player_state.CHECKER_BLUE:
+                    representation.append(" cb")
+                elif square.player_state == square_player_state.CHECKER_RED:
+                    representation.append(" cr")
                 
                 if square.column != 8:
                     representation.append(", ")

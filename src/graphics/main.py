@@ -10,6 +10,7 @@ class Game(arcade.Window):
         self.board = board
 
     def setup(self):
+        print(self.board)
         self.grid = Grid()
 
     def on_update(self, delta_time):
