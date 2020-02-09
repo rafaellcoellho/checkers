@@ -5,19 +5,37 @@ class Board():
     def __init__(self):
         initial_state = []
 
-        is_black = True
         for row in range(8):
             initial_state.append([])
-            for _ in range(8):
-                if is_black:
-                    color = square_color.BLACK
-                else:
+            for column in range(8):
+                def is_even(x):
+                    return x % 2 == 0
+
+                if is_even(row) == is_even(column):
                     color = square_color.WHITE
-                is_black = not is_black
+                else:
+                    color = square_color.BLACK
 
                 initial_state[row].append(
-                    Square(color)
+                    Square(row+1, column+1, color)
                 )
-            is_black = not is_black
-        
         self.state = initial_state
+    
+    def __repr__(self):
+        output = ["[\n"]
+        for row in self.state:
+            output.append("\t[ ")
+            for square in row:
+                representation = []
+                if square.color == square_color.WHITE:
+                    representation.append("w")
+                elif square.color == square_color.BLACK:
+                    representation.append("b")
+                
+                if square.column != 8:
+                    representation.append(", ")
+
+                output.append("".join(representation))
+            output.append(" ]\n")
+        output.append("]\n")
+        return "".join(output)

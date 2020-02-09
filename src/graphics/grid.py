@@ -1,25 +1,31 @@
 import arcade
-from .defines import square
+import graphics
+from logic.defines import square_color
 
 class Grid(arcade.ShapeElementList):
     def __init__(self):
         super().__init__()
 
-        for row in range(8):
-            for column in range(8):
-                def is_even(x):
-                    return x % 2 == 0
+    def update(self, board):
+        width = graphics.defines.square.WIDTH
+        heigth = graphics.defines.square.HEIGHT
+        margin = graphics.defines.square.MARGIN
 
-                if is_even(row) == is_even(column):
+        for shape in self:
+            self.remove(shape)
+
+        for row in board.state:
+            for square in row:
+                if square.color == square_color.WHITE:
                     color = arcade.color.WHITE
-                else:
+                elif square.color == square_color.BLACK:
                     color = arcade.color.BLACK
 
                 current_rect = arcade.create_rectangle_filled(
-                    (square.MARGIN + square.WIDTH) * column + square.MARGIN + square.WIDTH // 2,
-                    (square.MARGIN + square.HEIGHT) * row + square.MARGIN + square.HEIGHT // 2,
-                    square.WIDTH,
-                    square.HEIGHT,
+                    (margin + width) * (square.column-1) + margin + width // 2,
+                    (margin + heigth) * (square.row-1) + margin + heigth // 2,
+                    width,
+                    heigth,
                     color
                 )
                 self.append(current_rect)
