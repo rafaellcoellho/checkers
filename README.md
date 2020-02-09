@@ -31,7 +31,7 @@ $ pip install -r requirements.txt
 Run:
 
 ```bash
-$ python checkers.py
+$ python src/main.py
 ```
 
 ## Author
