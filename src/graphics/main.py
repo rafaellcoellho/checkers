@@ -29,8 +29,10 @@ class Game(arcade.Window):
     def on_mouse_press(self, x, y, button, key_modifiers):
         column = int(x // (square.WIDTH + square.MARGIN))
         row = int(y // (square.HEIGHT + square.MARGIN))
+
         if self.board.moving_checker == None:
-            self.board.calculate_possible_moves(row, column)
+            if self.board.is_active_player(row, column):
+                self.board.calculate_possible_moves(row, column)
         else:
             if [row, column] in self.board.possible_moves:
                 self.board.move(row,column)
