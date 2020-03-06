@@ -1,4 +1,4 @@
-class Square():
+class Square:
     def __init__(self, row, column, color, player_state): 
         self.row = row
         self.column = column       

@@ -1,11 +1,12 @@
 import arcade
 from .main import Game
-from .defines import window,TITLE
+from .defines import Window, TITLE
+
 
 def run(board):
     game = Game(
-        window.WIDTH,
-        window.HEIGHT,
+        Window.WIDTH,
+        Window.HEIGHT,
         TITLE,
         board
     )

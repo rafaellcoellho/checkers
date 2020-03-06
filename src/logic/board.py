@@ -1,7 +1,8 @@
-from .defines import square_player_state, square_color
+from .defines import SquarePlayerState, SquareColor
 from .square import Square
 
-class Board():
+
+class Board:
     def __init__(self):
         initial_state = []
 
@@ -11,16 +12,16 @@ class Board():
                 def is_even(x):
                     return x % 2 == 0
 
-                player_state = square_player_state.EMPTY
+                player_state = SquarePlayerState.EMPTY
 
                 if is_even(row) == is_even(column):
-                    color = square_color.WHITE
+                    color = SquareColor.WHITE
                 else:
-                    color = square_color.BLACK
+                    color = SquareColor.BLACK
                     if row in [0, 1, 2]:
-                        player_state = square_player_state.CHECKER_BLUE
+                        player_state = SquarePlayerState.CHECKER_BLUE
                     elif row in [5, 6, 7]:
-                        player_state = square_player_state.CHECKER_RED
+                        player_state = SquarePlayerState.CHECKER_RED
 
                 initial_state[row].append(
                     Square(row, column, color, player_state)
@@ -28,7 +29,7 @@ class Board():
         self.state = initial_state
         self.moving_checker = None
         self.possible_moves = None
-        self.active_player = square_player_state.CHECKER_BLUE
+        self.active_player = SquarePlayerState.CHECKER_BLUE
 
     def __repr__(self):
         output = ["[\n"]
@@ -37,16 +38,16 @@ class Board():
             for square in row:
                 representation = []
 
-                if square.color == square_color.WHITE:
+                if square.color == SquareColor.WHITE:
                     representation.append("w")
-                elif square.color == square_color.BLACK:
+                elif square.color == SquareColor.BLACK:
                     representation.append("b")
 
-                if square.player_state == square_player_state.CHECKER_BLUE:
+                if square.player_state == SquarePlayerState.CHECKER_BLUE:
                     representation.append(" cb")
-                elif square.player_state == square_player_state.CHECKER_RED:
+                elif square.player_state == SquarePlayerState.CHECKER_RED:
                     representation.append(" cr")
-                elif square.player_state == square_player_state.EMPTY:
+                elif square.player_state == SquarePlayerState.EMPTY:
                     representation.append(" e")
 
                 if square.possible_move:
@@ -67,7 +68,7 @@ class Board():
         if self.state[row][column].king:
             print('Not implemented yet')
         else:
-            if self.active_player == square_player_state.CHECKER_BLUE:
+            if self.active_player == SquarePlayerState.CHECKER_BLUE:
                 if row+1 <= 7 and column-1 >= 0:
                     self.possible_moves.append([row+1, column-1])
                     self.state[row+1][column-1].possible_move = True
@@ -97,21 +98,21 @@ class Board():
         player_state = self.state[from_row][from_column].player_state
         king = self.state[from_row][from_column].king
 
-        self.state[from_row][from_column].player_state = square_player_state.EMPTY
+        self.state[from_row][from_column].player_state = SquarePlayerState.EMPTY
         self.state[from_row][from_column].king = False
 
         self.state[to_row][to_column].player_state = player_state
         self.state[to_row][to_column].king = king
 
-        if self.active_player == square_player_state.CHECKER_BLUE:
-            self.active_player = square_player_state.CHECKER_RED
+        if self.active_player == SquarePlayerState.CHECKER_BLUE:
+            self.active_player = SquarePlayerState.CHECKER_RED
         else:
-            self.active_player = square_player_state.CHECKER_BLUE
+            self.active_player = SquarePlayerState.CHECKER_BLUE
         self.reset_possible_moves()
 
     def is_active_player(self, row, column):
         return self.state[row][column].player_state == self.active_player
 
     def is_player(self, row, column):
-        return self.state[row][column].player_state != square_player_state.EMPTY
+        return self.state[row][column].player_state != SquarePlayerState.EMPTY
 

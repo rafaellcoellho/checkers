@@ -1,30 +1,32 @@
 import arcade
-import graphics
-from logic.defines import square_player_state
+from .defines import Square
+from logic.defines import SquarePlayerState
+
 
 class Checker(arcade.ShapeElementList):
     def __init__(self):
         super().__init__()
 
     def update(self, board):
-        width = graphics.defines.square.WIDTH
-        heigth = graphics.defines.square.HEIGHT
-        margin = graphics.defines.square.MARGIN
+        width = Square.WIDTH
+        height = Square.HEIGHT
+        margin = Square.MARGIN
 
         for shape in self:
             self.remove(shape)
 
         for row in board.state:
             for square in row:
-                if square.player_state == square_player_state.CHECKER_RED:
+                color = None
+                if square.player_state == SquarePlayerState.CHECKER_RED:
                     color = arcade.color.RED
-                elif square.player_state == square_player_state.CHECKER_BLUE:
+                elif square.player_state == SquarePlayerState.CHECKER_BLUE:
                     color = arcade.color.BLUE
                 
-                if square.player_state != square_player_state.EMPTY:
+                if square.player_state != SquarePlayerState.EMPTY:
                     current_cir = arcade.create_ellipse_filled(
-                        (margin + width) * (square.column) + margin + width // 2,
-                        (margin + heigth) * (square.row) + margin + heigth // 2,
+                        (margin + width) * square.column + margin + width // 2,
+                        (margin + height) * square.row + margin + height // 2,
                         30,
                         30,
                         color
