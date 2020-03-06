@@ -1,10 +1,12 @@
+from typing import List
+
 from .defines import SquarePlayerState, SquareColor
 from .square import Square
 
 
 class Board:
     def __init__(self):
-        initial_state = []
+        initial_state: List[List[Square]] = []
 
         for row in range(8):
             initial_state.append([])
@@ -26,12 +28,15 @@ class Board:
                 initial_state[row].append(
                     Square(row, column, color, player_state)
                 )
-        self.state = initial_state
+        self.state: List[List[Square]] = initial_state
         self.moving_checker = None
         self.possible_moves = None
         self.active_player = SquarePlayerState.CHECKER_BLUE
 
     def __repr__(self):
+        return "%s(%r)" % (self.__class__, self.__dict__)
+
+    def __str__(self):
         output = ["[\n"]
         for row in self.state:
             output.append("\t[ ")

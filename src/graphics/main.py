@@ -39,4 +39,3 @@ class Game(arcade.Window):
                 self.board.move(row, column)
             else:
                 self.board.reset_possible_moves()
-        print(row, column)
