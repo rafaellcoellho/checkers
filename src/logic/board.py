@@ -28,6 +28,7 @@ class Board:
                 initial_state[row].append(
                     Square(row, column, color, player_state)
                 )
+
         self.state: List[List[Square]] = initial_state
         self.moving_checker = None
         self.possible_moves = None
