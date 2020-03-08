@@ -37,34 +37,10 @@ class Board:
         return "Board(state=%r)" % self.state
 
     def __str__(self):
-        output = ["[\n"]
-        for row in self.state:
-            output.append("\t[ ")
-            for square in row:
-                representation = []
-
-                if square.color == SquareColor.WHITE:
-                    representation.append("w")
-                elif square.color == SquareColor.BLACK:
-                    representation.append("b")
-
-                if square.player_state == SquarePlayerState.CHECKER_BLUE:
-                    representation.append(" cb")
-                elif square.player_state == SquarePlayerState.CHECKER_RED:
-                    representation.append(" cr")
-                elif square.player_state == SquarePlayerState.EMPTY:
-                    representation.append(" e")
-
-                if square.possible_move:
-                    representation.append(" pm")
-
-                if square.column != 8:
-                    representation.append(", ")
-
-                output.append("".join(representation))
-            output.append(" ]\n")
-        output.append("]\n")
-        return "".join(output)
+        def format_lines(line):
+            return "\n\t[" + ",".join(str(square) for square in line) + "]"
+        lines = list(map(format_lines, self.state))
+        return "[" + "".join(lines) + "\n]"
 
     def calculate_possible_moves(self, row, column):
         self.reset_possible_moves()
