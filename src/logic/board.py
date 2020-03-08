@@ -34,7 +34,7 @@ class Board:
         self.active_player = SquarePlayerState.CHECKER_BLUE
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__, self.__dict__)
+        return "Board(state=%r)" % self.state
 
     def __str__(self):
         output = ["[\n"]
