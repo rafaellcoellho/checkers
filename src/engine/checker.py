@@ -3,8 +3,9 @@ from engine.defines import Players
 
 
 class Checker:
-    def __init__(self, player: Players, pos: Tuple):
-        self.row, self.column = pos
+    def __init__(self, player: Players, row: int, column: int):
+        self.row = row
+        self.column = column
         self.player = player
         self.king = False
 
