@@ -12,7 +12,7 @@ class Checker:
     def __repr__(self):
         return f"Checker(belongs_to={self.player.name}," \
                f"{'king' if self.king else 'pawn'}," \
-               f"pos={chr(self.column+64)}{self.row})"
+               f"pos={chr(self.column+65)}{self.row+1})"
 
     def __str__(self):
         return f"{self.player.name}" \

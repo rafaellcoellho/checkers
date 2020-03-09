@@ -6,15 +6,15 @@ class Board:
         from engine.checker import Checker as C
         from engine.defines import Players as P
 
-        self.pieces: List[List] = [
-            [C(P.P1, 1, 1), None, C(P.P1, 1, 3), None, C(P.P1, 1, 5), None, C(P.P1, 1, 7), None],
-            [None, C(P.P1, 2, 2), None, C(P.P1, 2, 4), None, C(P.P1, 2, 6), None, C(P.P1, 2, 8)],
-            [C(P.P1, 3, 1), None, C(P.P1, 3, 3), None, C(P.P1, 3, 5), None, C(P.P1, 3, 7), None],
+        self.pieces: List[List[C]] = [
+            [C(P.P1, 0, 0), None, C(P.P1, 0, 2), None, C(P.P1, 0, 4), None, C(P.P1, 0, 6), None],
+            [None, C(P.P1, 1, 1), None, C(P.P1, 1, 3), None, C(P.P1, 1, 5), None, C(P.P1, 1, 7)],
+            [C(P.P1, 2, 0), None, C(P.P1, 2, 2), None, C(P.P1, 2, 4), None, C(P.P1, 2, 6), None],
             [None, None, None, None, None, None, None, None],
             [None, None, None, None, None, None, None, None],
-            [None, C(P.P2, 6, 2), None, C(P.P1, 6, 4), None, C(P.P1, 6, 6), None, C(P.P1, 6, 8)],
-            [C(P.P2, 7, 1), None, C(P.P2, 7, 3), None, C(P.P2, 7, 5), None, C(P.P2, 7, 7), None],
-            [None, C(P.P2, 8, 2), None, C(P.P1, 8, 4), None, C(P.P1, 8, 6), None, C(P.P1, 8, 8)],
+            [None, C(P.P2, 5, 1), None, C(P.P1, 5, 3), None, C(P.P1, 5, 5), None, C(P.P1, 5, 7)],
+            [C(P.P2, 6, 0), None, C(P.P2, 6, 2), None, C(P.P2, 6, 4), None, C(P.P2, 6, 6), None],
+            [None, C(P.P2, 7, 1), None, C(P.P1, 7, 3), None, C(P.P1, 7, 5), None, C(P.P1, 7, 7)],
         ]
         self.active_player = P.P1
 
