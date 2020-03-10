@@ -16,7 +16,7 @@ Create a virtual env:
 $ mkvirtualenv --python=python3.6 checkers
 ```
 
-If you alredy have the enviroment:
+If you already have the environment:
 
 ```bash
 $ workon checkers
@@ -31,7 +31,12 @@ $ pip install -r requirements.txt
 Run:
 
 ```bash
-$ python src/main.py
+$ python src/checkers.py
+```
+
+Tests:
+```bash
+$ pytest
 ```
 
 ## Author
@@ -41,3 +46,4 @@ $ python src/main.py
 ## Reference 
 
 + [how to play checkers](https://www.youtube.com/watch?v=yFrAN-LFZRU)
++ [implementation of parker knight](https://www.youtube.com/watch?v=PWl2LBISMug)
