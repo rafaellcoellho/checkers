@@ -22,11 +22,16 @@ class Board:
         return f"Board(pieces=%r)" % self.pieces
 
     def __str__(self):
-        def format_lines(line):
-            return "\n\t[" + ",".join(str(piece) for piece in line) + "]"
+        def format_piece(piece):
+            if piece is None:
+                return "   "
+            return str(piece)
 
+        def format_lines(line):
+            return "\n\t[" + ",".join(format_piece(piece) for piece in line) + "]"
         lines = list(map(format_lines, self.pieces))
-        return "[" + "".join(lines) + "\n]"
+        lines_reversed = list(reversed(lines))
+        return "[" + "".join(lines_reversed) + "\n]"
 
     def is_valid_selection(self, from_row, from_col):
         board_selection = self.pieces[from_row][from_col]

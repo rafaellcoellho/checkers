@@ -1,3 +1,5 @@
+from engine.board import Board
 
 if __name__ == "__main__":
-    print("Checkers!")
+    board = Board()
+    print(board)
