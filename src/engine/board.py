@@ -42,39 +42,52 @@ class Board:
         else:
             return False
 
-    def is_valid_pawn_move(self, from_row, from_col, to_row, to_col):
+    def can_capture_piece(self, row, col, capturing_player):
+        piece_to_capture = self.pieces[row][col]
+        if piece_to_capture is None:
+            return False
+        elif piece_to_capture.player == capturing_player:
+            return False
+        else:
+            return True
+
+    def is_valid_p1_pawn_move(self, to_row, to_col, from_row, from_col):
         from engine.defines import Players
 
-        def can_capture_piece(row, col, capturing_player):
-            piece_to_capture = self.pieces[row][col]
-            if piece_to_capture is None:
-                return False
-            elif piece_to_capture.player == capturing_player:
-                return False
-            else:
-                return True
+        if (to_row - from_row) == 1 and (to_col - from_col) == -1:
+            return True
+        elif (to_row - from_row) == 1 and (to_col - from_col) == 1:
+            return True
+        elif (to_row - from_row) == 2 and (to_col - from_col) == -2:  # try capture left
+            return self.can_capture_piece(from_row + 1, from_col - 1, Players.P1)
+        elif (to_row - from_row) == 2 and (to_col - from_col) == 2:  # try capture right
+            return self.can_capture_piece(from_row + 1, from_col + 1, Players.P1)
+
+        return False
+
+    def is_valid_p2_pawn_move(self, to_row, to_col, from_row, from_col):
+        from engine.defines import Players
+
+        if (to_row - from_row) == -1 and (to_col - from_col) == -1:
+            return True
+        elif (to_row - from_row) == -1 and (to_col - from_col) == 1:
+            return True
+        elif (to_row - from_row) == -2 and (to_col - from_col) == -2:  # try capture left
+            return self.can_capture_piece(from_row - 1, from_col - 1, Players.P2)
+        elif (to_row - from_row) == -2 and (to_col - from_col) == 2:  # try capture right
+            return self.can_capture_piece(from_row - 1, from_col + 1, Players.P2)
+
+        return False
+
+    def is_valid_pawn_move(self, from_row, from_col, to_row, to_col):
+        from engine.defines import Players
 
         if self.pieces[to_row][to_col] is not None:
             return False
 
         if self.pieces[from_row][from_col].player == Players.P1:
-            if (to_row - from_row) == 1 and (to_col - from_col) == -1:
-                return True
-            elif (to_row - from_row) == 1 and (to_col - from_col) == 1:
-                return True
-            elif (to_row - from_row) == 2 and (to_col - from_col) == -2:            # try capture left
-                return can_capture_piece(from_row + 1, from_col - 1, Players.P1)
-            elif (to_row - from_row) == 2 and (to_col - from_col) == 2:             # try capture right
-                return can_capture_piece(from_row + 1, from_col + 1, Players.P1)
+            return self.is_valid_p1_pawn_move(to_row, to_col, from_row, from_col)
 
         if self.pieces[from_row][from_col].player == Players.P2:
-            if (to_row - from_row) == -1 and (to_col - from_col) == -1:
-                return True
-            elif (to_row - from_row) == -1 and (to_col - from_col) == 1:
-                return True
-            elif (to_row - from_row) == -2 and (to_col - from_col) == -2:           # try capture left
-                return can_capture_piece(from_row - 1, from_col - 1, Players.P2)
-            elif (to_row - from_row) == -2 and (to_col - from_col) == 2:            # try capture right
-                return can_capture_piece(from_row - 1, from_col + 1, Players.P2)
+            return self.is_valid_p2_pawn_move(to_row, to_col, from_row, from_col)
 
-        return False
