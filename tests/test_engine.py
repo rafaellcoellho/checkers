@@ -2,46 +2,75 @@ import pytest
 from engine.defines import Players
 
 
-def test_begin_with_player_one(board):
-    assert board.active_player is Players.P1
+def _(origin: str, destination: str=None):
+
+    col_char, row_char = origin
+    from_row = int(row_char) - 1
+    from_col = ord(col_char) - 65
+
+    if destination is None:
+        return [from_row, from_col]
+
+    col_char, row_char = destination
+    to_row = int(row_char) - 1
+    to_col = ord(col_char) - 65
+
+    return [from_row, from_col, to_row, to_col]
 
 
-def test_is_valid_selection(board):
-    assert board.is_valid_selection(0, 0) is True
-    assert board.is_valid_selection(7, 7) is False
-    assert board.is_valid_selection(0, 1) is False
-
-    board.active_player = Players.P2
-    assert board.is_valid_selection(0, 0) is False
-    assert board.is_valid_selection(7, 7) is True
-    assert board.is_valid_selection(0, 1) is False
+def test_begin_with_player_one(initial_board):
+    assert initial_board.active_player is Players.P1
 
 
-def test_is_valid_pawn_move(board, board_simplified):
-    assert board.is_valid_pawn_move(2, 2, 3, 1) is True     # C3 -> B4 valid
-    assert board.is_valid_pawn_move(2, 2, 3, 2) is False    # C3 -> C4 invalid
-    assert board.is_valid_pawn_move(2, 2, 3, 3) is True     # C3 -> D4 valid
-    assert board.is_valid_pawn_move(2, 2, 1, 1) is False    # C3 -> B2 invalid
-    assert board.is_valid_pawn_move(2, 2, 1, 2) is False    # C3 -> C2 invalid
-    assert board.is_valid_pawn_move(2, 2, 1, 3) is False    # C3 -> D2 invalid
-    assert board.is_valid_pawn_move(2, 2, 2, 1) is False    # C3 -> B3 invalid
-    assert board.is_valid_pawn_move(2, 2, 2, 3) is False    # C3 -> D3 invalid
+def test_is_valid_selection(initial_board):
+    assert initial_board.is_valid_selection(*_("A1")) is True
+    assert initial_board.is_valid_selection(*_("H8")) is False
+    assert initial_board.is_valid_selection(*_("B1")) is False
 
-    assert board.is_valid_pawn_move(5, 1, 4, 0) is True     # B6 -> A5 valid
-    assert board.is_valid_pawn_move(5, 1, 4, 1) is False    # B6 -> B5 invalid
-    assert board.is_valid_pawn_move(5, 1, 4, 2) is True     # B6 -> C5 valid
-    assert board.is_valid_pawn_move(5, 1, 6, 0) is False    # B6 -> A7 invalid
-    assert board.is_valid_pawn_move(5, 1, 6, 1) is False    # B6 -> B7 invalid
-    assert board.is_valid_pawn_move(5, 1, 6, 2) is False    # B6 -> C7 invalid
-    assert board.is_valid_pawn_move(5, 1, 5, 0) is False    # B6 -> A6 invalid
-    assert board.is_valid_pawn_move(5, 1, 5, 2) is False    # B6 -> C6 invalid
+    initial_board.active_player = Players.P2
+    assert initial_board.is_valid_selection(*_("A1")) is False
+    assert initial_board.is_valid_selection(*_("H8")) is True
+    assert initial_board.is_valid_selection(*_("B1")) is False
 
-    assert board_simplified.is_valid_pawn_move(4, 4, 5, 5) is False    # E5 -> F6 invalid because enemy pawn is there
-    assert board_simplified.is_valid_pawn_move(4, 4, 6, 6) is True     # E5 -> G7 valid because enemy pawn is there
-    assert board_simplified.is_valid_pawn_move(4, 4, 5, 3) is False    # E5 -> D6 invalid because allied pawn is there
-    assert board_simplified.is_valid_pawn_move(4, 4, 6, 2) is False    # E5 -> C7 invalid because allied pawn is there
 
-    assert board_simplified.is_valid_pawn_move(4, 2, 3, 1) is False    # C5 -> B4 invalid because allied pawn is there
-    assert board_simplified.is_valid_pawn_move(4, 2, 2, 0) is False    # C5 -> A3 invalid because allied pawn is there
-    assert board_simplified.is_valid_pawn_move(4, 2, 3, 3) is False    # C5 -> D4 invalid because enemy pawn is there
-    assert board_simplified.is_valid_pawn_move(4, 2, 2, 4) is True    # C5 -> E3 valid because enemy pawn is there
+def test_is_valid_pawn_basic_move(initial_board):
+    assert initial_board.is_valid_pawn_move(*_("C3", "B4")) is True
+    assert initial_board.is_valid_pawn_move(*_("C3", "C4")) is False
+    assert initial_board.is_valid_pawn_move(*_("C3", "D4")) is True
+    assert initial_board.is_valid_pawn_move(*_("C3", "B2")) is False
+    assert initial_board.is_valid_pawn_move(*_("C3", "C2")) is False
+    assert initial_board.is_valid_pawn_move(*_("C3", "D2")) is False
+    assert initial_board.is_valid_pawn_move(*_("C3", "B3")) is False
+    assert initial_board.is_valid_pawn_move(*_("C3", "D3")) is False
+
+    assert initial_board.is_valid_pawn_move(*_("B6", "A5")) is True
+    assert initial_board.is_valid_pawn_move(*_("B6", "B5")) is False
+    assert initial_board.is_valid_pawn_move(*_("B6", "C5")) is True
+    assert initial_board.is_valid_pawn_move(*_("B6", "A7")) is False
+    assert initial_board.is_valid_pawn_move(*_("B6", "B7")) is False
+    assert initial_board.is_valid_pawn_move(*_("B6", "C7")) is False
+    assert initial_board.is_valid_pawn_move(*_("B6", "A6")) is False
+    assert initial_board.is_valid_pawn_move(*_("B6", "C6")) is False
+
+
+def test_is_valid_pawn_capture_move(empty_board):
+    from engine.checker import Checker
+    from engine.defines import Players
+
+    empty_board.pieces[4][4] = Checker(Players.P1, *_("E5"))
+    empty_board.pieces[5][5] = Checker(Players.P2, *_("F6"))
+    empty_board.pieces[5][3] = Checker(Players.P1, *_("D6"))
+
+    assert empty_board.is_valid_pawn_move(*_("E5", "F6")) is False
+    assert empty_board.is_valid_pawn_move(*_("E5", "G7")) is True
+    assert empty_board.is_valid_pawn_move(*_("E5", "D6")) is False
+    assert empty_board.is_valid_pawn_move(*_("E5", "C7")) is False
+
+    empty_board.pieces[4][2] = Checker(Players.P2, *_("C5"))
+    empty_board.pieces[3][1] = Checker(Players.P2, *_("A3"))
+    empty_board.pieces[3][3] = Checker(Players.P1, *_("D4"))
+
+    assert empty_board.is_valid_pawn_move(*_("C5", "B4")) is False
+    assert empty_board.is_valid_pawn_move(*_("C5", "A3")) is False
+    assert empty_board.is_valid_pawn_move(*_("C5", "D4")) is False
+    assert empty_board.is_valid_pawn_move(*_("C5", "E3")) is True
