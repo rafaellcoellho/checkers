@@ -36,8 +36,12 @@ def test_is_valid_pawn_move(board, board_simplified):
     assert board.is_valid_pawn_move(5, 1, 5, 0) is False    # B6 -> A6 invalid
     assert board.is_valid_pawn_move(5, 1, 5, 2) is False    # B6 -> C6 invalid
 
-    assert board_simplified.is_valid_pawn_move(4, 4, 5, 5) is False    # F4 -> E5 invalid because enemy pawn is there
-    assert board_simplified.is_valid_pawn_move(4, 4, 5, 3) is False    # F4 -> G5 invalid because allied pawn is there
+    assert board_simplified.is_valid_pawn_move(4, 4, 5, 5) is False    # E5 -> F6 invalid because enemy pawn is there
+    assert board_simplified.is_valid_pawn_move(4, 4, 6, 6) is True     # E5 -> G7 valid because enemy pawn is there
+    assert board_simplified.is_valid_pawn_move(4, 4, 5, 3) is False    # E5 -> D6 invalid because allied pawn is there
+    assert board_simplified.is_valid_pawn_move(4, 4, 6, 2) is False    # E5 -> C7 invalid because allied pawn is there
 
     assert board_simplified.is_valid_pawn_move(4, 2, 3, 1) is False    # C5 -> B4 invalid because allied pawn is there
-    assert board_simplified.is_valid_pawn_move(4, 2, 3, 3) is False    # C5 -> D5 invalid because enemy pawn is there
+    assert board_simplified.is_valid_pawn_move(4, 2, 2, 0) is False    # C5 -> A3 invalid because allied pawn is there
+    assert board_simplified.is_valid_pawn_move(4, 2, 3, 3) is False    # C5 -> D4 invalid because enemy pawn is there
+    assert board_simplified.is_valid_pawn_move(4, 2, 2, 4) is True    # C5 -> E3 valid because enemy pawn is there
