@@ -12,9 +12,9 @@ class Board:
             [C(P.P1, 2, 0), None, C(P.P1, 2, 2), None, C(P.P1, 2, 4), None, C(P.P1, 2, 6), None],
             [None, None, None, None, None, None, None, None],
             [None, None, None, None, None, None, None, None],
-            [None, C(P.P2, 5, 1), None, C(P.P1, 5, 3), None, C(P.P1, 5, 5), None, C(P.P1, 5, 7)],
+            [None, C(P.P2, 5, 1), None, C(P.P2, 5, 3), None, C(P.P2, 5, 5), None, C(P.P2, 5, 7)],
             [C(P.P2, 6, 0), None, C(P.P2, 6, 2), None, C(P.P2, 6, 4), None, C(P.P2, 6, 6), None],
-            [None, C(P.P2, 7, 1), None, C(P.P1, 7, 3), None, C(P.P1, 7, 5), None, C(P.P1, 7, 7)],
+            [None, C(P.P2, 7, 1), None, C(P.P2, 7, 3), None, C(P.P2, 7, 5), None, C(P.P2, 7, 7)],
         ]
         self.active_player = P.P1
 
@@ -27,3 +27,12 @@ class Board:
 
         lines = list(map(format_lines, self.pieces))
         return "[" + "".join(lines) + "\n]"
+
+    def is_valid_selection(self, from_row, from_col):
+        board_selection = self.pieces[from_row][from_col]
+        if board_selection is None:
+            return False
+        elif board_selection.player == self.active_player:
+            return True
+        else:
+            return False
