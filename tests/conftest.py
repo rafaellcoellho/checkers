@@ -1,5 +1,6 @@
 import pytest
 from engine.board import Board
+from engine.defines import Players
 
 
 @pytest.fixture

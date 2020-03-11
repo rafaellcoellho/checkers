@@ -91,3 +91,5 @@ class Board:
         if self.pieces[from_row][from_col].player == Players.P2:
             return self.is_valid_p2_pawn_move(to_row, to_col, from_row, from_col)
 
+    def no_chips_between(self, from_row, from_col, to_row, to_col):
+        pass

@@ -74,3 +74,28 @@ def test_is_valid_pawn_capture_move(empty_board):
     assert empty_board.is_valid_pawn_move(*_("C5", "A3")) is False
     assert empty_board.is_valid_pawn_move(*_("C5", "D4")) is False
     assert empty_board.is_valid_pawn_move(*_("C5", "E3")) is True
+
+
+@pytest.mark.parametrize("players", [(Players.P1, Players.P2), (Players.P2, Players.P1)])
+def test_detect_chips_between(empty_board, players):
+    from engine.checker import Checker
+
+    # Player 1
+    empty_board.pieces[4][0] = Checker(players[0], *_("A5"))
+    assert empty_board.no_chips_between(*_("A5", "D8")) is True
+
+    empty_board.pieces[2][6] = Checker(players[1], *_("C7"))
+    assert empty_board.no_chips_between(*_("A5", "D8")) is True
+
+    empty_board.pieces[5][1] = Checker(players[0], *_("B6"))
+    assert empty_board.no_chips_between(*_("A5", "D8")) is False
+
+    # Player 2
+    empty_board.pieces[3][7] = Checker(players[1], *_("H4"))
+    assert empty_board.no_chips_between(*_("H4", "E1")) is True
+
+    empty_board.pieces[1][4] = Checker(players[0], *_("F2"))
+    assert empty_board.no_chips_between(*_("H4", "E1")) is True
+
+    empty_board.pieces[2][6] = Checker(players[1], *_("G3"))
+    assert empty_board.no_chips_between(*_("H4", "E1")) is False
