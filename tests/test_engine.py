@@ -2,8 +2,7 @@ import pytest
 from engine.defines import Players
 
 
-def _(origin: str, destination: str=None):
-
+def _(origin: str, destination: str = None):
     col_char, row_char = origin
     from_row = int(row_char) - 1
     from_col = ord(col_char) - 65
@@ -77,25 +76,25 @@ def test_is_valid_pawn_capture_move(empty_board):
 
 
 @pytest.mark.parametrize("players", [(Players.P1, Players.P2), (Players.P2, Players.P1)])
-def test_detect_chips_between(empty_board, players):
+def test_is_valid_king_move(empty_board, players):
     from engine.checker import Checker
 
-    # Player 1
+    empty_board.active_player = players[0]
     empty_board.pieces[4][0] = Checker(players[0], *_("A5"))
-    assert empty_board.no_chips_between(*_("A5", "D8")) is True
+    assert empty_board.is_valid_king_move(*_("A5", "D8")) is True
 
-    empty_board.pieces[2][6] = Checker(players[1], *_("C7"))
-    assert empty_board.no_chips_between(*_("A5", "D8")) is True
+    empty_board.pieces[6][2] = Checker(players[1], *_("C7"))
+    assert empty_board.is_valid_king_move(*_("A5", "D8")) is True
 
     empty_board.pieces[5][1] = Checker(players[0], *_("B6"))
-    assert empty_board.no_chips_between(*_("A5", "D8")) is False
+    assert empty_board.is_valid_king_move(*_("A5", "D8")) is False
 
-    # Player 2
+    empty_board.active_player = players[1]
     empty_board.pieces[3][7] = Checker(players[1], *_("H4"))
-    assert empty_board.no_chips_between(*_("H4", "E1")) is True
+    assert empty_board.is_valid_king_move(*_("H4", "E1")) is True
 
     empty_board.pieces[1][4] = Checker(players[0], *_("F2"))
-    assert empty_board.no_chips_between(*_("H4", "E1")) is True
+    assert empty_board.is_valid_king_move(*_("H4", "E1")) is True
 
     empty_board.pieces[2][6] = Checker(players[1], *_("G3"))
-    assert empty_board.no_chips_between(*_("H4", "E1")) is False
+    assert empty_board.is_valid_king_move(*_("H4", "E1")) is False
