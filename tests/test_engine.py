@@ -33,6 +33,7 @@ def test_is_valid_selection(initial_board):
 
 
 def test_is_valid_pawn_basic_move(initial_board):
+    # Normal moves
     assert initial_board.is_valid_pawn_move(*_("C3", "B4")) is True
     assert initial_board.is_valid_pawn_move(*_("C3", "C4")) is False
     assert initial_board.is_valid_pawn_move(*_("C3", "D4")) is True
@@ -41,7 +42,11 @@ def test_is_valid_pawn_basic_move(initial_board):
     assert initial_board.is_valid_pawn_move(*_("C3", "D2")) is False
     assert initial_board.is_valid_pawn_move(*_("C3", "B3")) is False
     assert initial_board.is_valid_pawn_move(*_("C3", "D3")) is False
+    # Weird moves
+    assert initial_board.is_valid_pawn_move(*_("C3", "C5")) is False
+    assert initial_board.is_valid_pawn_move(*_("C3", "D8")) is False
 
+    # Normal moves
     assert initial_board.is_valid_pawn_move(*_("B6", "A5")) is True
     assert initial_board.is_valid_pawn_move(*_("B6", "B5")) is False
     assert initial_board.is_valid_pawn_move(*_("B6", "C5")) is True
@@ -50,6 +55,10 @@ def test_is_valid_pawn_basic_move(initial_board):
     assert initial_board.is_valid_pawn_move(*_("B6", "C7")) is False
     assert initial_board.is_valid_pawn_move(*_("B6", "A6")) is False
     assert initial_board.is_valid_pawn_move(*_("B6", "C6")) is False
+    # Weird moves
+    assert initial_board.is_valid_pawn_move(*_("B6", "G1")) is False
+    assert initial_board.is_valid_pawn_move(*_("B6", "E5")) is False
+
 
 
 @pytest.mark.parametrize("players", [(Players.P1, Players.P2), (Players.P2, Players.P1)])
