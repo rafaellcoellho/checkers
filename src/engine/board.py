@@ -151,3 +151,11 @@ class Board:
             return Players.P2
 
         return None
+
+    def move(self, from_row, from_col, to_row, to_col):
+        destination = self.pieces[to_row][to_col]
+
+        if not self.is_valid_selection(from_row, from_col) or destination is not None:
+            return False
+
+        return True
