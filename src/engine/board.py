@@ -200,3 +200,11 @@ class Board:
             return self.is_valid_king_move(*inputs, do_move=True)
         else:
             return self.is_valid_pawn_move(*inputs, do_move=True)
+
+    def next_turn(self):
+        from engine.defines import Players
+
+        if self.active_player is Players.P1:
+            self.active_player = Players.P2
+        else:
+            self.active_player = Players.P1
