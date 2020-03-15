@@ -153,6 +153,11 @@ class Board:
         return None
 
     def move(self, from_row, from_col, to_row, to_col):
+
+        inputs = [from_row, from_col, to_row, to_col]
+        if all(7 >= i >= 0 for i in inputs) is not True:
+            return False
+
         destination = self.pieces[to_row][to_col]
 
         if not self.is_valid_selection(from_row, from_col) or destination is not None:
