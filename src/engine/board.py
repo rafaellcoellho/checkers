@@ -29,6 +29,7 @@ class Board:
 
         def format_lines(line):
             return "\n\t[" + ",".join(format_piece(piece) for piece in line) + "]"
+
         lines = list(map(format_lines, self.pieces))
         lines_reversed = list(reversed(lines))
         return "[" + "".join(lines_reversed) + "\n]"
@@ -91,5 +92,23 @@ class Board:
         if self.pieces[from_row][from_col].player == Players.P2:
             return self.is_valid_p2_pawn_move(to_row, to_col, from_row, from_col)
 
-    def no_chips_between(self, from_row, from_col, to_row, to_col):
-        pass
+    def is_valid_king_move(self, from_row, from_col, to_row, to_col):
+        row_direction = 1 if from_row < to_row else -1
+        col_direction = 1 if from_col < to_col else -1
+
+        board_row_coord = list(range(from_row, to_row, row_direction))[1:]
+        board_col_coord = list(range(from_col, to_col, col_direction))[1:]
+        board_coord = list(zip(board_row_coord, board_col_coord))
+        board_values = [self.pieces[row][col] for row, col in board_coord]
+
+        if all(piece is None for piece in board_values) is True:
+            return True
+        else:
+            pieces_in_between = list([p for p in board_values if p is not None])
+            enemy_pieces_in_between = list([p for p in pieces_in_between if p.player is not self.active_player])
+            ally_pieces_in_between = list([p for p in pieces_in_between if p.player is self.active_player])
+
+            if len(ally_pieces_in_between) > 0 or len(enemy_pieces_in_between) > 1:
+                return False
+            else:
+                return True
