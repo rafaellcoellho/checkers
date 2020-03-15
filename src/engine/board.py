@@ -117,7 +117,7 @@ class Board:
         if self.pieces[from_row][from_col].player == Players.P2:
             return self.is_valid_p2_pawn_move(from_row, from_col, to_row, to_col, do_move)
 
-    def is_valid_king_move(self, from_row, from_col, to_row, to_col):
+    def is_valid_king_move(self, from_row, from_col, to_row, to_col, do_move=False):
         if to_row == from_row:
             return False
         elif to_col == from_col:
@@ -144,7 +144,10 @@ class Board:
         board_coord = list(zip(board_row_coord, board_col_coord))
         board_values = [self.pieces[row][col] for row, col in board_coord]
 
+        inputs = [from_row, from_col, to_row, to_col]
         if all(piece is None for piece in board_values) is True:
+            if do_move:
+                self.transfer_checker(*inputs)
             return True
         else:
             pieces_in_between = list([p for p in board_values if p is not None])
@@ -154,6 +157,12 @@ class Board:
             if len(ally_pieces_in_between) > 0 or len(enemy_pieces_in_between) > 1:
                 return False
             else:
+                if do_move:
+                    enemy_piece = enemy_pieces_in_between[0]
+                    row = enemy_piece.row
+                    col = enemy_piece.column
+                    self.pieces[row][col] = None
+                    self.transfer_checker(*inputs)
                 return True
 
     def game_winner(self):
@@ -188,6 +197,6 @@ class Board:
 
         moving_piece = self.pieces[from_row][from_col]
         if moving_piece.king is True:
-            return self.is_valid_king_move(*inputs)
+            return self.is_valid_king_move(*inputs, do_move=True)
         else:
             return self.is_valid_pawn_move(*inputs, do_move=True)

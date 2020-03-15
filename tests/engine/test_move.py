@@ -51,3 +51,15 @@ def test_capture_pawn(empty_board, players):
     assert empty_board.pieces[4][4] is None
 
 
+@pytest.mark.parametrize("players", [(Players.P1, Players.P2), (Players.P2, Players.P1)])
+def test_move_king(empty_board, players):
+    empty_board.active_player = players[0]
+
+    moving_piece = Checker(players[0], *cn("D4"), king=True)
+    empty_board.pieces[3][3] = moving_piece
+
+    assert empty_board.move(*cn("D4", "G7")) is True
+    assert empty_board.pieces[3][3] is None
+    assert empty_board.pieces[6][6] is moving_piece
+    assert moving_piece.row == 6
+    assert moving_piece.column == 6

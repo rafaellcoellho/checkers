@@ -3,11 +3,11 @@ from engine.defines import Players
 
 
 class Checker:
-    def __init__(self, player: Players, row: int, column: int):
+    def __init__(self, player: Players, row: int, column: int, king: bool = False):
         self.row = row
         self.column = column
         self.player = player
-        self.king = False
+        self.king = king
 
     def __repr__(self):
         return f"Checker(belongs_to={self.player.name}," \
