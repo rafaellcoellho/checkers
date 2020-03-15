@@ -60,7 +60,6 @@ def test_is_valid_pawn_basic_move(initial_board):
     assert initial_board.is_valid_pawn_move(*_("B6", "E5")) is False
 
 
-
 @pytest.mark.parametrize("players", [(Players.P1, Players.P2), (Players.P2, Players.P1)])
 def test_is_valid_pawn_capture_move(empty_board, players):
     from engine.checker import Checker
@@ -123,3 +122,16 @@ def test_is_valid_king_move(empty_board, players):
 
     empty_board.pieces[2][6] = Checker(players[1], *_("G3"))
     assert empty_board.is_valid_king_move(*_("H4", "E1")) is False
+
+
+def test_game_winner(empty_board):
+    from engine.checker import Checker
+
+    empty_board.pieces[0][0] = Checker(Players.P1, *_("A1"))
+    assert empty_board.game_winner() is Players.P1
+
+    empty_board.pieces[7][7] = Checker(Players.P2, *_("H8"))
+    assert empty_board.game_winner() is None
+
+    empty_board.pieces[0][0] = None
+    assert empty_board.game_winner() is Players.P2
