@@ -87,9 +87,6 @@ class Board:
     def is_valid_pawn_move(self, from_row, from_col, to_row, to_col):
         from engine.defines import Players
 
-        if self.pieces[to_row][to_col] is not None:
-            return False
-
         if self.pieces[from_row][from_col].player == Players.P1:
             return self.is_valid_p1_pawn_move(to_row, to_col, from_row, from_col)
 
