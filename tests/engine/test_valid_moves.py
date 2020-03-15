@@ -42,13 +42,9 @@ def test_is_valid_pawn_capture_move(empty_board, players):
     empty_board.pieces[3][3] = Checker(players[1], *cn("D4"))
     empty_board.pieces[3][5] = Checker(players[0], *cn("F4"))
 
-    assert empty_board.is_valid_pawn_move(*cn("E5", "F6")) is False
     assert empty_board.is_valid_pawn_move(*cn("E5", "G7")) is True
-    assert empty_board.is_valid_pawn_move(*cn("E5", "D6")) is False
     assert empty_board.is_valid_pawn_move(*cn("E5", "C7")) is False
-    assert empty_board.is_valid_pawn_move(*cn("E5", "D4")) is False
     assert empty_board.is_valid_pawn_move(*cn("E5", "C3")) is True
-    assert empty_board.is_valid_pawn_move(*cn("E5", "F4")) is False
     assert empty_board.is_valid_pawn_move(*cn("E5", "G3")) is False
 
 
