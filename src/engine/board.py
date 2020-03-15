@@ -53,30 +53,34 @@ class Board:
             return True
 
     def is_valid_p1_pawn_move(self, to_row, to_col, from_row, from_col):
-        from engine.defines import Players
-
         if (to_row - from_row) == 1 and (to_col - from_col) == -1:
             return True
         elif (to_row - from_row) == 1 and (to_col - from_col) == 1:
             return True
-        elif (to_row - from_row) == 2 and (to_col - from_col) == -2:  # try capture left
-            return self.can_capture_piece(from_row + 1, from_col - 1, Players.P1)
-        elif (to_row - from_row) == 2 and (to_col - from_col) == 2:  # try capture right
-            return self.can_capture_piece(from_row + 1, from_col + 1, Players.P1)
+        elif (to_row - from_row) == 2 and (to_col - from_col) == -2:    # try capture left
+            return self.can_capture_piece(from_row + 1, from_col - 1)
+        elif (to_row - from_row) == 2 and (to_col - from_col) == 2:     # try capture right
+            return self.can_capture_piece(from_row + 1, from_col + 1)
+        elif (to_row - from_row) == -2 and (to_col - from_col) == -2:   # try capture backwards left
+            return self.can_capture_piece(from_row - 1, from_col - 1)
+        elif (to_row - from_row) == -2 and (to_col - from_col) == 2:    # try capture backwards right
+            return self.can_capture_piece(from_row - 1, from_col + 1)
 
         return False
 
     def is_valid_p2_pawn_move(self, to_row, to_col, from_row, from_col):
-        from engine.defines import Players
-
         if (to_row - from_row) == -1 and (to_col - from_col) == -1:
             return True
         elif (to_row - from_row) == -1 and (to_col - from_col) == 1:
             return True
-        elif (to_row - from_row) == -2 and (to_col - from_col) == -2:  # try capture left
-            return self.can_capture_piece(from_row - 1, from_col - 1, Players.P2)
-        elif (to_row - from_row) == -2 and (to_col - from_col) == 2:  # try capture right
-            return self.can_capture_piece(from_row - 1, from_col + 1, Players.P2)
+        elif (to_row - from_row) == -2 and (to_col - from_col) == -2:   # try capture left
+            return self.can_capture_piece(from_row - 1, from_col - 1)
+        elif (to_row - from_row) == -2 and (to_col - from_col) == 2:    # try capture right
+            return self.can_capture_piece(from_row - 1, from_col + 1)
+        elif (to_row - from_row) == 2 and (to_col - from_col) == -2:    # try capture backwards left
+            return self.can_capture_piece(from_row + 1, from_col - 1)
+        elif (to_row - from_row) == 2 and (to_col - from_col) == 2:     # try capture backwards right
+            return self.can_capture_piece(from_row + 1, from_col + 1)
 
         return False
 
