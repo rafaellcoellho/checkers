@@ -43,11 +43,11 @@ class Board:
         else:
             return False
 
-    def can_capture_piece(self, row, col, capturing_player):
+    def can_capture_piece(self, row, col):
         piece_to_capture = self.pieces[row][col]
         if piece_to_capture is None:
             return False
-        elif piece_to_capture.player == capturing_player:
+        elif piece_to_capture.player == self.active_player:
             return False
         else:
             return True
