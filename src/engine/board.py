@@ -97,6 +97,24 @@ class Board:
             return self.is_valid_p2_pawn_move(to_row, to_col, from_row, from_col)
 
     def is_valid_king_move(self, from_row, from_col, to_row, to_col):
+        if to_row == from_row:
+            return False
+        elif to_col == from_col:
+            return False
+
+        if to_row > from_row and to_col > from_col:
+            if (to_row - from_row) != (to_col - from_col):
+                return False
+        if to_row < from_row and to_col < from_col:
+            if (from_row - to_row) != (from_col - to_col):
+                return False
+        if to_row < from_row and to_col > from_col:
+            if (from_row - to_row) != (to_col - from_col):
+                return False
+        if to_row > from_row and to_col < from_col:
+            if (to_row - from_row) != (from_col - to_col):
+                return False
+
         row_direction = 1 if from_row < to_row else -1
         col_direction = 1 if from_col < to_col else -1
 
