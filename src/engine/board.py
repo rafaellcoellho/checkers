@@ -134,3 +134,23 @@ class Board:
                 return False
             else:
                 return True
+
+    def game_winner(self):
+        from engine.defines import Players
+
+        p1_pieces_count = 0
+        p2_pieces_count = 0
+        for lines in self.pieces:
+            for piece in lines:
+                if piece is not None:
+                    if piece.player is Players.P1:
+                        p1_pieces_count = p1_pieces_count+1
+                    elif piece.player is Players.P2:
+                        p2_pieces_count = p2_pieces_count+1
+
+        if p1_pieces_count > 0 and p2_pieces_count == 0:
+            return Players.P1
+        elif p2_pieces_count > 0 and p1_pieces_count == 0:
+            return Players.P2
+
+        return None
