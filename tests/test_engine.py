@@ -53,7 +53,7 @@ def test_is_valid_pawn_basic_move(initial_board):
 
 
 @pytest.mark.parametrize("players", [(Players.P1, Players.P2), (Players.P2, Players.P1)])
-def test_is_valid_p1_pawn_capture_move(empty_board, players):
+def test_is_valid_pawn_capture_move(empty_board, players):
     from engine.checker import Checker
 
     empty_board.active_player = players[0]
