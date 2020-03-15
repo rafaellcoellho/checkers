@@ -79,7 +79,16 @@ def test_is_valid_king_move(empty_board, players):
 
     empty_board.active_player = players[0]
     empty_board.pieces[4][0] = Checker(players[0], *_("A5"))
+    # Normal moves
     assert empty_board.is_valid_king_move(*_("A5", "D8")) is True
+    assert empty_board.is_valid_king_move(*_("A5", "A7")) is False
+    assert empty_board.is_valid_king_move(*_("A5", "C5")) is False
+    assert empty_board.is_valid_king_move(*_("A5", "C3")) is True
+    assert empty_board.is_valid_king_move(*_("A5", "A3")) is False
+    # Weird moves
+    assert empty_board.is_valid_king_move(*_("A5", "D6")) is False
+    assert empty_board.is_valid_king_move(*_("A5", "F6")) is False
+    assert empty_board.is_valid_king_move(*_("A5", "B8")) is False
 
     empty_board.pieces[6][2] = Checker(players[1], *_("C7"))
     assert empty_board.is_valid_king_move(*_("A5", "D8")) is True
@@ -89,7 +98,16 @@ def test_is_valid_king_move(empty_board, players):
 
     empty_board.active_player = players[1]
     empty_board.pieces[3][7] = Checker(players[1], *_("H4"))
+    # Normal moves
     assert empty_board.is_valid_king_move(*_("H4", "E1")) is True
+    assert empty_board.is_valid_king_move(*_("H4", "H2")) is False
+    assert empty_board.is_valid_king_move(*_("H4", "F4")) is False
+    assert empty_board.is_valid_king_move(*_("H4", "F6")) is True
+    assert empty_board.is_valid_king_move(*_("H4", "H6")) is False
+    # Weird moves
+    assert empty_board.is_valid_king_move(*_("H4", "B2")) is False
+    assert empty_board.is_valid_king_move(*_("H4", "C3")) is False
+    assert empty_board.is_valid_king_move(*_("H4", "D6")) is False
 
     empty_board.pieces[1][4] = Checker(players[0], *_("F2"))
     assert empty_board.is_valid_king_move(*_("H4", "E1")) is True
