@@ -52,27 +52,25 @@ def test_is_valid_pawn_basic_move(initial_board):
     assert initial_board.is_valid_pawn_move(*_("B6", "C6")) is False
 
 
-def test_is_valid_pawn_capture_move(empty_board):
+@pytest.mark.parametrize("players", [(Players.P1, Players.P2), (Players.P2, Players.P1)])
+def test_is_valid_p1_pawn_capture_move(empty_board, players):
     from engine.checker import Checker
-    from engine.defines import Players
 
-    empty_board.pieces[4][4] = Checker(Players.P1, *_("E5"))
-    empty_board.pieces[5][5] = Checker(Players.P2, *_("F6"))
-    empty_board.pieces[5][3] = Checker(Players.P1, *_("D6"))
+    empty_board.active_player = players[0]
+    empty_board.pieces[4][4] = Checker(players[0], *_("E5"))
+    empty_board.pieces[5][5] = Checker(players[1], *_("F6"))
+    empty_board.pieces[5][3] = Checker(players[0], *_("D6"))
+    empty_board.pieces[3][3] = Checker(players[1], *_("D4"))
+    empty_board.pieces[3][5] = Checker(players[0], *_("F4"))
 
     assert empty_board.is_valid_pawn_move(*_("E5", "F6")) is False
     assert empty_board.is_valid_pawn_move(*_("E5", "G7")) is True
     assert empty_board.is_valid_pawn_move(*_("E5", "D6")) is False
     assert empty_board.is_valid_pawn_move(*_("E5", "C7")) is False
-
-    empty_board.pieces[4][2] = Checker(Players.P2, *_("C5"))
-    empty_board.pieces[3][1] = Checker(Players.P2, *_("A3"))
-    empty_board.pieces[3][3] = Checker(Players.P1, *_("D4"))
-
-    assert empty_board.is_valid_pawn_move(*_("C5", "B4")) is False
-    assert empty_board.is_valid_pawn_move(*_("C5", "A3")) is False
-    assert empty_board.is_valid_pawn_move(*_("C5", "D4")) is False
-    assert empty_board.is_valid_pawn_move(*_("C5", "E3")) is True
+    assert empty_board.is_valid_pawn_move(*_("E5", "D4")) is False
+    assert empty_board.is_valid_pawn_move(*_("E5", "C3")) is True
+    assert empty_board.is_valid_pawn_move(*_("E5", "F4")) is False
+    assert empty_board.is_valid_pawn_move(*_("E5", "G3")) is False
 
 
 @pytest.mark.parametrize("players", [(Players.P1, Players.P2), (Players.P2, Players.P1)])
