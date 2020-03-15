@@ -45,5 +45,5 @@ $ pytest
 
 ## Reference 
 
-+ [how to play checkers](https://www.youtube.com/watch?v=yFrAN-LFZRU)
++ [international checkers rules](https://en.wikipedia.org/wiki/International_draughts)
 + [implementation of parker knight](https://www.youtube.com/watch?v=PWl2LBISMug)
