@@ -1,6 +1,6 @@
 # Checkers
 
-Implementation of a checkers game in python and arcade
+Implementation of a checkers game in python and arcade [**still in development**]
 
 <p align="center">
 	<a href="">
