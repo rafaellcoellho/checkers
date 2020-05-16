@@ -47,3 +47,6 @@ $ pytest
 
 + [international checkers rules](https://en.wikipedia.org/wiki/International_draughts)
 + [implementation of parker knight](https://www.youtube.com/watch?v=PWl2LBISMug)
++ [python sockets tutorial](https://realpython.com/python-sockets)
++ [python threading tutorial](https://realpython.com/intro-to-python-threading)
++ [tech with tim tutorial about multiplayer game with python](https://www.youtube.com/playlist?list=PLzMcBGfZo4-kR7Rh-7JCVDN8lm3Utumvq)
