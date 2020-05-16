@@ -11,7 +11,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> from src.network.server import Server
 >>> server = Server('127.0.0.1', 65432)
 >>> server.run()
->>> listening on ('127.0.0.1', 65432)
+Serving on ('127.0.0.1', 65432)
 ```
 
 You can CTRL + C the thread will still be active with the server listening for connections.
@@ -42,7 +42,7 @@ If everything is correct, in the server terminal:
 
 ```bash
 [...]
->>> listening on ('127.0.0.1', 65432)
-accepted connection from ('127.0.0.1', 41482)
-echoing b'hello world' to ('127.0.0.1', 41482)
+Serving on ('127.0.0.1', 65432)
+Connection from ('127.0.0.1', 48202)
+Received from ('127.0.0.1', 48202): hello world
 ```
