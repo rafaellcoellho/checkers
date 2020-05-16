@@ -1,71 +1,50 @@
+import asyncio
 import threading
-import types
-import selectors
 
 
-def process_messages(key, mask, selector):
-    server_socket = key.fileobj
-    data = key.data
+def game_server_loop(host: str, port: int) -> None:
+    event_loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(event_loop)
 
-    if mask & selectors.EVENT_READ:
-        received_data = server_socket.recv(1024)
-        if received_data:
-            data.output += received_data
-        else:
-            print('closing connection to', data.address)
-            selector.unregister(server_socket)
-            server_socket.close()
-    if mask & selectors.EVENT_WRITE:
-        if data.output:
-            print('echoing', repr(data.output), 'to', data.address)
-            sent = server_socket.send(data.output)
-            data.output = data.output[sent:]
+    game_server = event_loop.create_server(GameServer, host, port)
+    game_server_instance = event_loop.run_until_complete(game_server)
 
+    print(f'Serving on {game_server_instance.sockets[0].getsockname()}')
+    try:
+        event_loop.run_forever()
+    except KeyboardInterrupt:
+        print('Closing server')
 
-def accept_new_connection(socket, selector):
-    connection, address = socket.accept()
-    connection.setblocking(False)
-    print('accepted connection from', address)
-
-    # TODO: create better representation for data
-    data = types.SimpleNamespace(address=address, input=b'', output=b'')
-
-    events = selectors.EVENT_READ | selectors.EVENT_WRITE
-    selector.register(connection, events, data=data)
+    game_server_instance.close()
+    event_loop.run_until_complete(game_server_instance.wait_closed())
+    event_loop.close()
 
 
-def main_loop(host, port):
-    import socket
+class GameServer(asyncio.Protocol):
+    def __init__(self):
+        self.transport = None
+        self.peername = None
 
-    connection_info = (host, port)
-    selector = selectors.DefaultSelector()
+    def connection_made(self, transport: asyncio.transports.BaseTransport) -> None:
+        self.peername = transport.get_extra_info('peername')
+        print(f'Connection from {self.peername}')
+        self.transport = transport
 
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(connection_info)
-    server_socket.listen(2)
+    def data_received(self, data: bytes) -> None:
+        message = data.decode()
+        print(f'Received from {self.peername}: {message}')
 
-    print('listening on', connection_info)
-
-    server_socket.setblocking(False)
-    selector.register(server_socket, selectors.EVENT_READ, data=None)
-
-    while True:
-        events = selector.select(timeout=None)
-        for key, mask in events:
-            if key.data is None:
-                accept_new_connection(key.fileobj, selector)
-            else:
-                process_messages(key, mask, selector)
+        # send to all other peers
 
 
 class Server:
-    def __init__(self, host, port):
+    def __init__(self, host: str, port: int) -> None:
         self.host = host
         self.port = port
 
-    def run(self):
+    def run(self) -> None:
         args_to_server = (self.host, self.port)
         server_daemon_thread = threading.Thread(
-            target=main_loop, args=args_to_server, daemon=True
+            target=game_server_loop, args=args_to_server, daemon=True
         )
         server_daemon_thread.start()
