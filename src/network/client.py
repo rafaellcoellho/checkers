@@ -1,4 +1,5 @@
 import socket
+from network import logger
 
 
 class Client:
@@ -9,22 +10,22 @@ class Client:
 
     def connect(self) -> bool:
         connection_info = (self.host, self.port)
-        print('Try connecting to server...')
+        logger.info(f'Try connecting to server on {connection_info}')
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.connect(connection_info)
             data_received = self.socket.recv(1024)
             message = data_received.decode('utf-8')
             if message == 'Success':
-                print(f'Connected to {self.socket.getpeername()}')
+                logger.info(f'Connected to {self.socket.getpeername()}')
                 return True
             else:
-                print(f'Connection refused: {message}')
+                logger.info(f'Connection refused: {message}')
                 self.socket.close()
                 self.socket = None
                 return False
         except OSError as msg:
-            print(msg)
+            logger.warning(msg)
             self.socket.close()
             self.socket = None
             return False
@@ -39,6 +40,6 @@ class Client:
         return msg
 
     def disconnect(self):
-        print(f'Disconnected from {self.socket.getpeername()}')
+        logger.info(f'Disconnected from {self.socket.getpeername()}')
         self.socket.close()
         self.socket = None
