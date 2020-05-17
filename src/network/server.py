@@ -21,20 +21,43 @@ def game_server_loop(host: str, port: int) -> None:
 
 
 class GameServer(asyncio.Protocol):
+    players = []
+
     def __init__(self):
         self.transport = None
         self.peername = None
 
-    def connection_made(self, transport: asyncio.transports.BaseTransport) -> None:
+    def connection_made(self, transport: asyncio.transports.WriteTransport) -> None:
         self.peername = transport.get_extra_info('peername')
-        print(f'Connection from {self.peername}')
         self.transport = transport
+
+        if len(GameServer.players) == 2:
+            print(f'Rejecting connection from {self.peername}')
+            self.transport.write(str.encode('Full server'))
+            self.transport.close()
+        else:
+            self.transport.write(str.encode('Success'))
+            print(f'Connection from {self.peername}')
+            GameServer.players.append(self.transport)
 
     def data_received(self, data: bytes) -> None:
         message = data.decode()
         print(f'Received from {self.peername}: {message}')
 
         # send to all other peers
+        for transport in GameServer.players:
+            if transport is not self.transport:
+                transport.write(data)
+
+    def connection_lost(self, exc) -> None:
+        if exc is None:
+            print(f'Disconnect from {self.peername}')
+        else:
+            print(f'Problem with the connection, check {exc}')
+
+        for index, transport in enumerate(GameServer.players):
+            if transport is self.transport:
+                del GameServer.players[index]
 
 
 class Server:
