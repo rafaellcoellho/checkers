@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "checkers"
+version = "0.1.0"
+description = "Checkers game in python and arcade"
+authors = ["rafaellcoellho <rafaellcoellho@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+arcade = "2.3.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "5.3.5"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
