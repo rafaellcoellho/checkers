@@ -1,7 +1,7 @@
 import logging
 
 log_format = logging.Formatter(
-    '%(levelname)s -> [%(asctime)s][%(module)s:%(filename)s]: %(message)s',
+    '%(levelname)s -> [%(asctime)s][network:%(filename)s]: %(message)s',
     datefmt='%d/%m/%Y %H:%M'
 )
 
