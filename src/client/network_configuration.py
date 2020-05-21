@@ -3,6 +3,7 @@ import tkinter as tk
 
 class NetworkConfigurationUi:
     def __init__(self):
+        self.is_hosting_server = None
         self.ip = None
         self.port = None
 
@@ -35,11 +36,31 @@ class NetworkConfigurationUi:
         self.buttons_frame.columnconfigure([0, 1], minsize=35)
         self.buttons_frame.rowconfigure(0, minsize=10)
 
-        self.confirm_button = tk.Button(self.buttons_frame, text="Connect")
+        self.host_local_button = tk.Button(
+            self.buttons_frame, text="Host server locally", command=self.set_host_server_local
+        )
+        self.host_local_button.grid(row=0, column=0)
+
+        self.confirm_button = tk.Button(self.buttons_frame, text="Connect", command=self.get_client_config)
         self.confirm_button.grid(row=0, column=1)
 
-        self.host_local_button = tk.Button(self.buttons_frame, text="Host server locally")
-        self.host_local_button.grid(row=0, column=0)
+    def set_host_server_local(self):
+        self.ip = None
+        self.port = None
+
+        self.is_hosting_server = True
+
+        self.host_local_button.master.master.destroy()
+
+    def get_client_config(self):
+        self.ip = self.ip_entry.get()
+        self.port = int(self.port_entry.get())
+
+        self.is_hosting_server = False
+
+        self.confirm_button.master.master.destroy()
 
     def run(self):
         self.root.mainloop()
+
+        return self.is_hosting_server, self.ip, self.port
