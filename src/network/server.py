@@ -66,6 +66,10 @@ class Server:
         self.host = host
         self.port = port
 
+    @staticmethod
+    def get_number_of_players():
+        return len(GameServer.players)
+
     def run(self) -> None:
         args_to_server = (self.host, self.port)
         server_daemon_thread = threading.Thread(
