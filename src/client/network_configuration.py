@@ -9,7 +9,15 @@ class NetworkConfigurationUi:
 
         self.root = tk.Tk()
         self.root.title("Network Configuration")
-        self.root.geometry("225x130")
+
+        w = 225
+        h = 130
+        ws = self.root.winfo_screenwidth()
+        hs = self.root.winfo_screenheight()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        self.root.geometry(f"{w}x{h}+{int(x)}+{int(y)}")
+
         self.root.resizable(0, 0)
         self.root.columnconfigure([0, 1], minsize=10)
         self.root.rowconfigure([0, 1, 2, 3], minsize=30)
