@@ -4,13 +4,12 @@ description = "Arcade Game Development Library"
 name = "arcade"
 optional = false
 python-versions = ">=3.6"
-version = "2.3.4"
+version = "2.3.15"
 
 [package.dependencies]
 numpy = "*"
 pillow = "*"
 pyglet = "*"
-pyglet-ffmpeg2 = "*"
 pytiled-parser = "*"
 
 [[package]]
@@ -44,6 +43,14 @@ name = "colorama"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 version = "0.4.3"
+
+[[package]]
+category = "main"
+description = "A backport of the dataclasses module for Python 3.6"
+name = "dataclasses"
+optional = false
+python-versions = ">=3.6, <3.7"
+version = "0.7"
 
 [[package]]
 category = "dev"
@@ -130,17 +137,6 @@ python-versions = "*"
 version = "1.5.5"
 
 [[package]]
-category = "main"
-description = "Platform wheels with ffmpeg binaries and ctypes for pyglet"
-name = "pyglet-ffmpeg2"
-optional = false
-python-versions = "*"
-version = "0.1.17"
-
-[package.dependencies]
-pyglet = ">=1.4.4"
-
-[[package]]
 category = "dev"
 description = "Python parsing module"
 name = "pyparsing"
@@ -191,7 +187,7 @@ description = "Python 2 and 3 compatibility utilities"
 name = "six"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
-version = "1.14.0"
+version = "1.15.0"
 
 [[package]]
 category = "dev"
@@ -215,12 +211,12 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "cb7da2c32461af4d791ae19bff487ab0be2c6378eefd5347f24beb11728b39e3"
-python-versions = "^3.6"
+content-hash = "cf95bb25fae4d9804ceed32af44eb107f326ee17d3349b0738f7251140fe48f5"
+python-versions = "3.6"
 
 [metadata.files]
 arcade = [
-    {file = "arcade-2.3.4-py2.py3-none-any.whl", hash = "sha256:8a402bc4215e8284ceb7fe20be1fa89d3f54481d139a9527077f134f866ec99f"},
+    {file = "arcade-2.3.15-py2.py3-none-any.whl", hash = "sha256:0ec8572d15f504ed081385d3d121a4647c0c4c0b3dcd5e0ed1ff9d49296f792d"},
 ]
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
@@ -233,6 +229,10 @@ attrs = [
 colorama = [
     {file = "colorama-0.4.3-py2.py3-none-any.whl", hash = "sha256:7d73d2a99753107a36ac6b455ee49046802e59d9d076ef8e47b61499fa29afff"},
     {file = "colorama-0.4.3.tar.gz", hash = "sha256:e96da0d330793e2cb9485e9ddfd918d456036c7149416295932478192f4436a1"},
+]
+dataclasses = [
+    {file = "dataclasses-0.7-py3-none-any.whl", hash = "sha256:3459118f7ede7c8bea0fe795bff7c6c2ce287d01dd226202f7c9ebc0610a7836"},
+    {file = "dataclasses-0.7.tar.gz", hash = "sha256:494a6dcae3b8bcf80848eea2ef64c0cc5cd307ffc263e17cdf42f3e5420808e6"},
 ]
 importlib-metadata = [
     {file = "importlib_metadata-1.6.0-py2.py3-none-any.whl", hash = "sha256:2a688cbaa90e0cc587f1df48bdc97a6eadccdcd9c35fb3f976a09e3b5016d90f"},
@@ -306,9 +306,6 @@ pyglet = [
     {file = "pyglet-1.5.5-py3-none-any.whl", hash = "sha256:9695fe73335246a13385c12b21d6562657ed62b15892d43660fa3207f0f515b9"},
     {file = "pyglet-1.5.5.zip", hash = "sha256:14f3f1c68c70aa101ee4ee91f122ec8ff41ebc30885a95f733ecbbc3542e4d70"},
 ]
-pyglet-ffmpeg2 = [
-    {file = "pyglet_ffmpeg2-0.1.17-py3-none-any.whl", hash = "sha256:a0a9c53c72ae4444d280be18f5360851c4e76d6009ff7bb28ee9b5aae37e2e2a"},
-]
 pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
@@ -321,8 +318,8 @@ pytiled-parser = [
     {file = "pytiled_parser-0.9.3-py3-none-any.whl", hash = "sha256:7664f5ed291fa51bad131c0f844f80c81ee604c768eb05ebe29530ddff4a0000"},
 ]
 six = [
-    {file = "six-1.14.0-py2.py3-none-any.whl", hash = "sha256:8f3cd2e254d8f793e7f3d6d9df77b92252b52637291d0f0da013c76ea2724b6c"},
-    {file = "six-1.14.0.tar.gz", hash = "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a"},
+    {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
+    {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
 ]
 wcwidth = [
     {file = "wcwidth-0.1.9-py2.py3-none-any.whl", hash = "sha256:cafe2186b3c009a04067022ce1dcd79cb38d8d65ee4f4791b8888d6599d1bbe1"},
