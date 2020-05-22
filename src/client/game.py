@@ -27,7 +27,7 @@ class Grid(arcade.ShapeElementList):
             ["W", "B", "W", "B", "W", "B", "W", "B"],
         ]
 
-    def update(self):
+    def create(self):
         width = Square.WIDTH
         height = Square.HEIGHT
         margin = Square.MARGIN
@@ -63,9 +63,10 @@ class GameWindow(arcade.Window):
 
     def setup(self):
         self.grid = Grid()
+        self.grid.create()
 
     def on_update(self, delta_time: float):
-        self.grid.update()
+        pass
 
     def on_draw(self):
         arcade.start_render()
