@@ -1,78 +1,93 @@
-import asyncio
+import selectors
+import socket
 import threading
+
 from network import logger
 
 
-def game_server_loop(host: str, port: int) -> None:
-    event_loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(event_loop)
+class GameServer:
+    def __init__(self, host: str, port: int) -> None:
+        self.players = []
 
-    game_server = event_loop.create_server(GameServer, host, port)
-    game_server_instance = event_loop.run_until_complete(game_server)
+        self.connection_information = (host, port)
+        self.socket_selector = selectors.DefaultSelector()
 
-    logger.info(f'Serving on {game_server_instance.sockets[0].getsockname()}')
-    try:
-        event_loop.run_forever()
-    except KeyboardInterrupt:
-        logger.info('Closing server')
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.setblocking(False)
+        self.server_socket.bind(self.connection_information)
+        self.server_socket.listen(2)
 
-    game_server_instance.close()
-    event_loop.run_until_complete(game_server_instance.wait_closed())
-    event_loop.close()
+        self.socket_selector.register(
+            self.server_socket, selectors.EVENT_READ, data=self.accept_handler
+        )
 
+        logger.info(f"Serving on {self.connection_information}")
 
-class GameServer(asyncio.Protocol):
-    players = []
+    def accept_handler(self, file_obj_socket):
+        client_socket, address = file_obj_socket.accept()
+        client_socket.setblocking(False)
 
-    def __init__(self):
-        self.transport = None
-        self.peername = None
+        peername = client_socket.getpeername()
 
-    def connection_made(self, transport: asyncio.transports.WriteTransport) -> None:
-        self.peername = transport.get_extra_info('peername')
-        self.transport = transport
+        if len(self.players) < 2:
+            client_socket.sendall(b"Success")
+            self.players.append({
+                "file_obj": file_obj_socket,
+                "socket": client_socket
+            })
 
-        if len(GameServer.players) == 2:
-            logger.info(f'Rejecting connection from {self.peername}')
-            self.transport.write(str.encode('Full server'))
-            self.transport.close()
+            logger.info(f"Connection from {peername}")
+
+            self.socket_selector.register(
+                client_socket, selectors.EVENT_READ, data=self.receive_handler
+            )
         else:
-            self.transport.write(str.encode('Success'))
-            logger.info(f'Connection from {self.peername}')
-            GameServer.players.append(self.transport)
+            logger.info(f'Rejecting connection from {peername}')
+            client_socket.sendall(b"Full server")
+            client_socket.close()
 
-    def data_received(self, data: bytes) -> None:
-        message = data.decode()
-        logger.info(f'Received from {self.peername}: {message}')
+    def receive_handler(self, file_obj_socket):
+        data = file_obj_socket.recv(1024)
+        if data:
+            self.data_received(file_obj_socket, data)
+        else:
+            logger.info(f"Disconnect from {file_obj_socket.getpeername()}")
+            self.socket_selector.unregister(file_obj_socket)
+            for player in self.players:
+                if player["file_obj"] is file_obj_socket:
+                    del player
+
+            file_obj_socket.close()
+
+    def data_received(self, file_obj_socket, data):
+        message = data.decode("utf-8")
+        logger.info(f"Received from {file_obj_socket.getpeername()}: {message}")
 
         # send to all other peers
-        for transport in GameServer.players:
-            if transport is not self.transport:
-                transport.write(data)
+        for player in self.players:
+            if player["socket"] is not file_obj_socket:
+                player["socket"].sendall(data)
 
-    def connection_lost(self, exc) -> None:
-        if exc is None:
-            logger.info(f'Disconnect from {self.peername}')
-        else:
-            logger.info(f'Problem with the connection, check {exc}')
+    def main_loop(self):
+        try:
+            while True:
+                events = self.socket_selector.select()
+                for key, _ in events:
+                    callback = key.data
+                    callback(key.fileobj)
+        except KeyboardInterrupt:
+            logger.info('Closing server')
 
-        for index, transport in enumerate(GameServer.players):
-            if transport is self.transport:
-                del GameServer.players[index]
+        self.server_socket.close()
+        self.socket_selector.close()
 
 
 class Server:
     def __init__(self, host: str, port: int) -> None:
-        self.host = host
-        self.port = port
-
-    @staticmethod
-    def get_number_of_players():
-        return len(GameServer.players)
+        self.game_server_instance = GameServer(host, port)
 
     def run(self) -> None:
-        args_to_server = (self.host, self.port)
         server_daemon_thread = threading.Thread(
-            target=game_server_loop, args=args_to_server, daemon=True
+            target=self.game_server_instance.main_loop, daemon=True
         )
         server_daemon_thread.start()
