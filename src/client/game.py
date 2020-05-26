@@ -86,6 +86,9 @@ class Checker(arcade.Sprite):
             (margin + height) * self.row + margin + height // 2
         )
 
+    def belongs_to(self, p):
+        return self.player == p
+
     def move(self, row, column):
         self.row = row
         self.column = column
@@ -98,7 +101,7 @@ class Checker(arcade.Sprite):
 
 
 class GameWindow(arcade.Window):
-    def __init__(self, width: int, height: int, title: str, board):
+    def __init__(self, width: int, height: int, title: str, board, player):
         super().__init__(width, height, title)
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -108,15 +111,33 @@ class GameWindow(arcade.Window):
 
         self.grid = None
         self.board = board
+        self.player = player
 
     def setup(self):
         self.grid = Grid()
         self.grid.create()
 
-        self.checker = Checker(Players.P1, 7, 0)
-
         self.checkers_list = arcade.SpriteList()
-        self.checkers_list.append(self.checker)
+
+        player_1_starter_checker_pos = [
+            (0, 0), (0, 2), (0, 4), (0, 6),
+            (1, 1), (1, 3), (1, 5), (1, 7),
+            (2, 0), (2, 2), (2, 4), (2, 6),
+        ]
+        for row, column in player_1_starter_checker_pos:
+            self.checkers_list.append(
+                Checker(Players.P1, row, column)
+            )
+
+        player_2_starter_checker_pos = [
+            (5, 1), (5, 3), (5, 5), (5, 7),
+            (6, 0), (6, 2), (6, 4), (6, 6),
+            (7, 1), (7, 3), (7, 5), (7, 7),
+        ]
+        for row, column in player_2_starter_checker_pos:
+            self.checkers_list.append(
+                Checker(Players.P2, row, column)
+            )
 
     def on_draw(self):
         arcade.start_render()
@@ -130,9 +151,13 @@ class GameWindow(arcade.Window):
     def on_mouse_press(self, x: float, y: float, button: int, key_modifiers: int):
         if button == arcade.MOUSE_BUTTON_LEFT:
             hit_sprites = arcade.get_sprites_at_point((x, y), self.checkers_list)
+
             if len(hit_sprites) > 0:
-                self.dragged_checker = hit_sprites[0]
-                self.dragged_checker.been_dragged = True
+                checker = hit_sprites[0]
+
+                if checker.belongs_to(self.player):
+                    self.dragged_checker = checker
+                    self.dragged_checker.been_dragged = True
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         if self.dragged_checker is not None:
@@ -152,15 +177,17 @@ class GameWindow(arcade.Window):
 
 
 class GameUi:
-    def __init__(self, board=None):
+    def __init__(self, player, board=None):
         self.board = board
+        self.player = player
 
     def run(self):
         game_window = GameWindow(
             Window.WIDTH,
             Window.HEIGHT,
             'checkers',
-            self.board
+            self.board,
+            self.player
         )
         game_window.setup()
         arcade.run()
