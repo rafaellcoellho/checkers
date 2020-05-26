@@ -64,6 +64,7 @@ class Checker(arcade.Sprite):
         self.column = initial_column
         self.player = player
         self.is_king = is_king
+        self.been_dragged = False
 
         x, y = self.get_top_left_coord()
         sprite_filename = ":resources:images/pinball/pool_cue_ball.png"
@@ -90,9 +91,10 @@ class Checker(arcade.Sprite):
         self.column = column
 
     def update(self):
-        x, y = self.get_top_left_coord()
-        self.center_x = x
-        self.center_y = y
+        if not self.been_dragged:
+            x, y = self.get_top_left_coord()
+            self.center_x = x
+            self.center_y = y
 
 
 class GameWindow(arcade.Window):
@@ -102,6 +104,7 @@ class GameWindow(arcade.Window):
 
         self.checkers_list = None
         self.checker = None
+        self.dragged_checker = None
 
         self.grid = None
         self.board = board
@@ -125,11 +128,27 @@ class GameWindow(arcade.Window):
         self.checkers_list.update()
 
     def on_mouse_press(self, x: float, y: float, button: int, key_modifiers: int):
-        column = int(x // (float(Square.WIDTH + Square.MARGIN)))
-        row = int(y // (float(Square.HEIGHT + Square.MARGIN)))
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            hit_sprites = arcade.get_sprites_at_point((x, y), self.checkers_list)
+            if len(hit_sprites) > 0:
+                self.dragged_checker = hit_sprites[0]
+                self.dragged_checker.been_dragged = True
 
-        self.checkers_list[0].move(row, column)
-        print(column, row)
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        if self.dragged_checker is not None:
+            self.dragged_checker.center_x = x
+            self.dragged_checker.center_y = y
+
+    def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
+        if button == arcade.MOUSE_BUTTON_LEFT and self.dragged_checker is not None:
+            column = int(x // (float(Square.WIDTH + Square.MARGIN)))
+            row = int(y // (float(Square.HEIGHT + Square.MARGIN)))
+
+            if 0 <= column <= 7 and 0 <= row <= 7:
+                self.dragged_checker.move(row, column)
+
+            self.dragged_checker.been_dragged = False
+            self.dragged_checker = None
 
 
 class GameUi:
