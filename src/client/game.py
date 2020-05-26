@@ -66,7 +66,7 @@ class Checker(arcade.Sprite):
         self.is_king = is_king
         self.been_dragged = False
 
-        x, y = self.get_top_left_coord()
+        x, y = self.get_coord()
         sprite_filename = ":resources:images/pinball/pool_cue_ball.png"
         if self.player == Players.P1:
             sprite_color = arcade.color.RED
@@ -76,7 +76,7 @@ class Checker(arcade.Sprite):
         super().__init__(sprite_filename, center_x=x, center_y=y)
         self.color = sprite_color
 
-    def get_top_left_coord(self):
+    def get_coord(self):
         width = Square.WIDTH
         height = Square.HEIGHT
         margin = Square.MARGIN
@@ -92,7 +92,7 @@ class Checker(arcade.Sprite):
 
     def update(self):
         if not self.been_dragged:
-            x, y = self.get_top_left_coord()
+            x, y = self.get_coord()
             self.center_x = x
             self.center_y = y
 
