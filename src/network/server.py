@@ -42,7 +42,7 @@ class GameServer:
                 client_socket, selectors.EVENT_READ, data=self.receive_handler
             )
         else:
-            logger.info(f'Rejecting connection from {peername}')
+            logger.info(f"Rejecting connection from {peername}")
             client_socket.sendall(b"Full server")
             client_socket.close()
 
@@ -76,7 +76,7 @@ class GameServer:
                     callback = key.data
                     callback(key.fileobj)
         except KeyboardInterrupt:
-            logger.info('Closing server')
+            logger.info("Closing server")
 
         self.server_socket.close()
         self.socket_selector.close()
