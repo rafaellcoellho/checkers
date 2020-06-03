@@ -1,45 +1,99 @@
+import selectors
 import socket
+import threading
+from queue import Queue
+
 from network import logger
 
 
-class Client:
-    def __init__(self, host: str, port: int):
-        self.host = host
-        self.port = port
-        self.socket = None
+class GameClient:
+    def __init__(self, host: str, port: int, receive_queue: Queue):
+        self.receive_queue = receive_queue
 
-    def connect(self) -> bool:
-        connection_info = (self.host, self.port)
-        logger.info(f'Try connecting to server on {connection_info}')
+        self.connection_information = (host, port)
+        self.socket_selector = selectors.DefaultSelector()
+
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        logger.info(f'Try connecting to server on {self.connection_information}')
         try:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.connect(connection_info)
-            data_received = self.socket.recv(1024)
+            self.client_socket.connect(self.connection_information)
+            data_received = self.client_socket.recv(1024)
+            self.client_socket.setblocking(False)
             message = data_received.decode('utf-8')
+
             if message == 'Success':
-                logger.info(f'Connected to {self.socket.getpeername()}')
-                return True
+                logger.info(f'Connected to {self.connection_information}')
+                self.connected = True
             else:
                 logger.info(f'Connection refused: {message}')
-                self.socket.close()
-                self.socket = None
-                return False
+
+                self.client_socket.close()
+                self.client_socket = None
+
+                self.connected = False
         except OSError as msg:
             logger.warning(msg)
-            self.socket.close()
-            self.socket = None
-            return False
 
-    def send_to_server(self, data: str) -> None:
-        data_in_bytes = str.encode(data)
-        self.socket.send(data_in_bytes)
+            self.client_socket.close()
+            self.client_socket = None
 
-    def receive_from_server(self) -> str:
-        data_received = self.socket.recv(1024)
-        msg = data_received.decode('utf-8')
-        return msg
+            self.connected = False
+
+        if self.connected:
+            self.socket_selector.register(
+                self.client_socket, selectors.EVENT_READ, data=self.receive_handler
+            )
+
+    def receive_handler(self, file_obj_socket):
+        data = file_obj_socket.recv(1024)
+        if data:
+            self.data_received(file_obj_socket, data)
+        else:
+            logger.info(f"Lost connection from {file_obj_socket.getpeername()}")
+            self.socket_selector.unregister(file_obj_socket)
+
+            file_obj_socket.close()
+
+    def data_received(self, file_obj_socket, data):
+        message = data.decode("utf-8")
+        logger.info(f"Received from {file_obj_socket.getpeername()}: {message}")
+
+        # put in the queue
+        self.receive_queue.put(message)
+
+    def send_to_server(self, msg: str) -> None:
+        data: bytes = str.encode(msg)
+        self.client_socket.send(data)
+
+    def main_loop(self):
+        try:
+            while True:
+                events = self.socket_selector.select()
+                for key, _ in events:
+                    callback = key.data
+                    callback(key.fileobj)
+        except KeyboardInterrupt:
+            logger.info("Closing server")
+
+        self.client_socket.close()
+        self.socket_selector.close()
 
     def disconnect(self):
-        logger.info(f'Disconnected from {self.socket.getpeername()}')
-        self.socket.close()
-        self.socket = None
+        logger.info(f'Disconnected from {self.client_socket.getpeername()}')
+        self.client_socket.close()
+        self.client_socket = None
+
+
+class Client:
+    def __init__(self, host: str, port: int, receive_queue: Queue) -> None:
+        self.game_client_instance = GameClient(host, port, receive_queue)
+
+    def run(self) -> None:
+        client_daemon_thread = threading.Thread(
+            target=self.game_client_instance.main_loop, daemon=True
+        )
+        client_daemon_thread.start()
+
+    def send_to_server(self, msg: str):
+        self.game_client_instance.send_to_server(msg)
