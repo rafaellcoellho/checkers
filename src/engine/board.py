@@ -17,6 +17,10 @@ class Board:
             [None, C(P.P2, 7, 1), None, C(P.P2, 7, 3), None, C(P.P2, 7, 5), None, C(P.P2, 7, 7)],
         ]
         self.active_player = P.P1
+        self.last_piece_removed = None
+        self.last_piece_king = None
+        self.to_capture_piece = False
+        self.already_move_this_turn = False
 
     def __repr__(self):
         return f"Board(pieces=%r)" % self.pieces
@@ -34,6 +38,18 @@ class Board:
         lines_reversed = list(reversed(lines))
         return "[" + "".join(lines_reversed) + "\n]"
 
+    def get_last_piece_removed(self):
+        piece_removed = self.last_piece_removed
+        self.last_piece_removed = None
+
+        return piece_removed
+
+    def get_last_piece_king(self):
+        piece_now_king = self.last_piece_king
+        self.last_piece_king = None
+
+        return piece_now_king
+
     def is_valid_selection(self, from_row, from_col):
         board_selection = self.pieces[from_row][from_col]
         if board_selection is None:
@@ -44,23 +60,36 @@ class Board:
             return False
 
     def transfer_checker(self, from_row, from_col, to_row, to_col):
+        from engine.defines import Players
+
         moving_piece = self.pieces[from_row][from_col]
         moving_piece.row = to_row
         moving_piece.column = to_col
         self.pieces[from_row][from_col] = None
         self.pieces[to_row][to_col] = moving_piece
 
+        if moving_piece.player == Players.P1 and to_row == 7:
+            self.last_piece_king = (to_row, to_col)
+            moving_piece.king = True
+
+        if moving_piece.player == Players.P2 and to_row == 0:
+            self.last_piece_king = (to_row, to_col)
+            moving_piece.king = True
+
     def can_capture_piece(self, row, col, from_row, from_col, to_row, to_col, do_move=False):
         piece_to_capture = self.pieces[row][col]
-        moving_piece = self.pieces[row][col]
+        # moving_piece = self.pieces[row][col]
         if piece_to_capture is None:
             return False
         elif piece_to_capture.player == self.active_player:
             return False
         else:
             if do_move:
+                self.last_piece_removed = (row, col)
                 self.pieces[row][col] = None
                 self.transfer_checker(from_row, from_col, to_row, to_col)
+            else:
+                self.to_capture_piece = True
 
             return True
 
@@ -161,8 +190,12 @@ class Board:
                     enemy_piece = enemy_pieces_in_between[0]
                     row = enemy_piece.row
                     col = enemy_piece.column
+                    self.last_piece_removed = (row, col)
                     self.pieces[row][col] = None
                     self.transfer_checker(*inputs)
+                else:
+                    self.to_capture_piece = True
+
                 return True
 
     def game_winner(self):
@@ -186,6 +219,7 @@ class Board:
         return None
 
     def move(self, from_row, from_col, to_row, to_col):
+        self.to_capture_piece = False
 
         inputs = [from_row, from_col, to_row, to_col]
         if all(7 >= i >= 0 for i in inputs) is not True:
@@ -196,13 +230,35 @@ class Board:
             return False
 
         moving_piece = self.pieces[from_row][from_col]
+
         if moving_piece.king is True:
-            return self.is_valid_king_move(*inputs, do_move=True)
+            if self.already_move_this_turn:
+                result = self.is_valid_king_move(*inputs, do_move=False)
+                if result is True and self.to_capture_piece:
+                    self.is_valid_king_move(*inputs, do_move=True)
+                else:
+                    result = False
+            else:
+                result = self.is_valid_king_move(*inputs, do_move=True)
         else:
-            return self.is_valid_pawn_move(*inputs, do_move=True)
+            if self.already_move_this_turn:
+                result = self.is_valid_pawn_move(*inputs, do_move=False)
+                if result is True and self.to_capture_piece:
+                    self.is_valid_pawn_move(*inputs, do_move=True)
+                else:
+                    result = False
+            else:
+                result = self.is_valid_pawn_move(*inputs, do_move=True)
+
+        if result is True:
+            self.already_move_this_turn = True
+
+        return result
 
     def next_turn(self):
         from engine.defines import Players
+
+        self.already_move_this_turn = False
 
         if self.active_player is Players.P1:
             self.active_player = Players.P2

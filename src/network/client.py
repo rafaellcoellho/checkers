@@ -15,6 +15,9 @@ class GameClient:
 
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+        self.connected = False
+
+    def connect(self):
         logger.info(f'Try connecting to server on {self.connection_information}')
         try:
             self.client_socket.connect(self.connection_information)
@@ -45,8 +48,10 @@ class GameClient:
                 self.client_socket, selectors.EVENT_READ, data=self.receive_handler
             )
 
+        return self.connected
+
     def receive_handler(self, file_obj_socket):
-        data = file_obj_socket.recv(1024)
+        data = file_obj_socket.recv(9)
         if data:
             self.data_received(file_obj_socket, data)
         else:
@@ -89,7 +94,10 @@ class Client:
     def __init__(self, host: str, port: int, receive_queue: Queue) -> None:
         self.game_client_instance = GameClient(host, port, receive_queue)
 
-    def run(self) -> None:
+    def connect(self):
+        return self.game_client_instance.connect()
+
+    def listen(self) -> None:
         client_daemon_thread = threading.Thread(
             target=self.game_client_instance.main_loop, daemon=True
         )
@@ -97,3 +105,6 @@ class Client:
 
     def send_to_server(self, msg: str):
         self.game_client_instance.send_to_server(msg)
+
+    def disconnect(self):
+        self.game_client_instance.disconnect()

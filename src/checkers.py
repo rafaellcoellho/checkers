@@ -1,11 +1,14 @@
 import sys
 import time
 
-from engine.board import Board
+from queue import Queue
+
+from engine.defines import Players
 from network.server import Server
 from network.client import Client
 from client.network_configuration import NetworkConfigurationUi
 from client.dialogs import ServerWaitingDialog
+from client.game import GameUi
 
 if __name__ == "__main__":
     net_conf_ui = NetworkConfigurationUi()
@@ -15,22 +18,36 @@ if __name__ == "__main__":
         sys.exit()
 
     is_hosting_server, ip, port = info
+    receive_queue = Queue()
+
+    server = None
+    client = None
 
     if is_hosting_server:
+        player = Players.P1
         server = Server('127.0.0.1', 65432)
         server.run()
 
-        client = Client('127.0.0.1', 65432)
+        client = Client('127.0.0.1', 65432, receive_queue)
         time.sleep(1)
         if client.connect() is not True:
             sys.exit()
 
+        client.listen()
+
         wait_dialog = ServerWaitingDialog('127.0.0.1', 65432, server.get_number_of_players)
         wait_dialog.run()
     else:
-        client = Client(ip, port)
+        player = Players.P2
+        client = Client(ip, port, receive_queue)
         if client.connect() is not True:
             sys.exit()
+        client.listen()
 
-    time.sleep(10)
-    print("begin match")
+    game = GameUi(player, client, receive_queue)
+    game.run()
+
+    if server is not None:
+        server.close_server()
+
+    client.disconnect()

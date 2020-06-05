@@ -1,5 +1,7 @@
 import arcade
 from enum import IntEnum
+from engine.defines import Players
+from engine.utils import cn, nc
 
 
 class Square(IntEnum):
@@ -11,11 +13,6 @@ class Square(IntEnum):
 class Window(IntEnum):
     WIDTH = (Square.WIDTH + Square.MARGIN) * 8 + Square.MARGIN
     HEIGHT = (Square.HEIGHT + Square.MARGIN) * 8 + Square.MARGIN
-
-
-class Players(IntEnum):
-    P1 = 1
-    P2 = 2
 
 
 class Grid(arcade.ShapeElementList):
@@ -101,7 +98,7 @@ class Checker(arcade.Sprite):
 
 
 class GameWindow(arcade.Window):
-    def __init__(self, width: int, height: int, title: str, board, player):
+    def __init__(self, width: int, height: int, title: str, player, client, receive_queue, turn_dialog):
         super().__init__(width, height, title)
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -109,9 +106,14 @@ class GameWindow(arcade.Window):
         self.checker = None
         self.dragged_checker = None
 
+        self.tick = 0
+        self.my_turn = True if player is Players.P1 else False
+        self.turn_dialog = turn_dialog
+
         self.grid = None
-        self.board = board
         self.player = player
+        self.client = client
+        self.receive_queue = receive_queue
 
     def setup(self):
         self.grid = Grid()
@@ -148,8 +150,70 @@ class GameWindow(arcade.Window):
     def on_update(self, delta_time: float):
         self.checkers_list.update()
 
+        self.tick += delta_time
+        if self.tick > 1.0:
+            if self.receive_queue.empty() is False:
+                message = self.receive_queue.get()
+
+                command = message[:3]
+                if command == "mov":
+                    from_coord = message[4:6]
+                    to_coord = message[7:9]
+
+                    from_row, from_col, to_row, to_col = cn(from_coord, to_coord)
+
+                    real_x = (Square.MARGIN + Square.WIDTH) * from_col + Square.MARGIN + Square.WIDTH // 2
+                    real_y = (Square.MARGIN + Square.HEIGHT) * from_row + Square.MARGIN + Square.HEIGHT // 2
+
+                    hit_sprites = arcade.get_sprites_at_point((real_x, real_y), self.checkers_list)
+
+                    if len(hit_sprites) > 0:
+                        checker = hit_sprites[0]
+                        checker.move(to_row, to_col)
+                elif command == "ytn":
+                    self.my_turn = True
+                    self.turn_dialog.is_my_turn()
+                elif command == "ntn":
+                    self.my_turn = False
+                elif command == "rmv":
+                    coord = message[4:6]
+                    from_row, from_col = cn(coord)
+
+                    real_x = (Square.MARGIN + Square.WIDTH) * from_col + Square.MARGIN + Square.WIDTH // 2
+                    real_y = (Square.MARGIN + Square.HEIGHT) * from_row + Square.MARGIN + Square.HEIGHT // 2
+
+                    hit_sprites = arcade.get_sprites_at_point((real_x, real_y), self.checkers_list)
+
+                    if len(hit_sprites) > 0:
+                        checker = hit_sprites[0]
+                        checker.remove_from_sprite_lists()
+                elif command == "kin":
+                    coord = message[4:6]
+                    from_row, from_col = cn(coord)
+
+                    real_x = (Square.MARGIN + Square.WIDTH) * from_col + Square.MARGIN + Square.WIDTH // 2
+                    real_y = (Square.MARGIN + Square.HEIGHT) * from_row + Square.MARGIN + Square.HEIGHT // 2
+
+                    hit_sprites = arcade.get_sprites_at_point((real_x, real_y), self.checkers_list)
+
+                    if len(hit_sprites) > 0:
+                        checker = hit_sprites[0]
+                        if checker.player == Players.P1:
+                            checker.color = arcade.color.RED_DEVIL
+                        else:
+                            checker.color = arcade.color.BLUE_GREEN
+                elif command == "win":
+                    self.turn_dialog.show_message(" You Win ")
+                elif command == "los":
+                    self.turn_dialog.show_message("You Lost")
+
+                else:
+                    print(f"Unknown command {message}")
+
+            self.tick = 0
+
     def on_mouse_press(self, x: float, y: float, button: int, key_modifiers: int):
-        if button == arcade.MOUSE_BUTTON_LEFT:
+        if button == arcade.MOUSE_BUTTON_LEFT and self.my_turn is True:
             hit_sprites = arcade.get_sprites_at_point((x, y), self.checkers_list)
 
             if len(hit_sprites) > 0:
@@ -166,28 +230,47 @@ class GameWindow(arcade.Window):
 
     def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
         if button == arcade.MOUSE_BUTTON_LEFT and self.dragged_checker is not None:
-            column = int(x // (float(Square.WIDTH + Square.MARGIN)))
             row = int(y // (float(Square.HEIGHT + Square.MARGIN)))
+            column = int(x // (float(Square.WIDTH + Square.MARGIN)))
 
             if 0 <= column <= 7 and 0 <= row <= 7:
+                from_x, from_y = self.dragged_checker.get_coord()
+                from_index = (
+                    int(from_y // (float(Square.HEIGHT + Square.MARGIN))),
+                    int(from_x // (float(Square.WIDTH + Square.MARGIN)))
+                )
+                to_index = (row, column)
+
+                from_in_notation, to_in_notation = nc(from_index, to_index)
+
                 self.dragged_checker.move(row, column)
+                self.client.send_to_server(f"mov:{from_in_notation},{to_in_notation}")
 
             self.dragged_checker.been_dragged = False
             self.dragged_checker = None
 
 
 class GameUi:
-    def __init__(self, player, board=None):
-        self.board = board
+    def __init__(self, player, client, receive_queue):
         self.player = player
+        self.client = client
+        self.receive_queue = receive_queue
 
     def run(self):
+        from client.dialogs import PassTurnDialog
+
+        is_my_turn = True if self.player is Players.P1 else False
+        turn_dialog = PassTurnDialog(self.client, is_my_turn)
+        turn_dialog.run()
+
         game_window = GameWindow(
             Window.WIDTH,
             Window.HEIGHT,
             'checkers',
-            self.board,
-            self.player
+            self.player,
+            self.client,
+            self.receive_queue,
+            turn_dialog
         )
         game_window.setup()
         arcade.run()
