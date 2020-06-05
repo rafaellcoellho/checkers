@@ -1,6 +1,6 @@
 # Checkers
 
-Implementation of a checkers game in python and arcade [**work in progress**]
+Implementation of a checkers game in python and arcade.
 
 <p align="center">
 	<a href="">
@@ -25,7 +25,7 @@ $ workon checkers
 Install all dependencies: 
 
 ```bash
-$ pip install -r requirements.txt
+$ poetry install
 ```
 
 Run:

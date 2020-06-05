@@ -33,8 +33,11 @@ Python 3.6.10 (default, Dec 27 2019, 13:40:13)
 [GCC 9.2.1 20190827 (Red Hat 9.2.1-1)] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> from src.network.client import Client
->>> client = Client('127.0.0.1', 65432)
+>>> from queue import Queue
+>>> receive_queue = Queue()
+>>> client = Client('127.0.0.1', 65432, receive_queue)
 >>> client.connect()
+>>> client.listen()
 >>> client.send_to_server('hello world')
 ```
 
